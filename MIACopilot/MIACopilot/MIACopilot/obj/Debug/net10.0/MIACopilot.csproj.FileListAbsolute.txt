@@ -1,0 +1,15 @@
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.GeneratedMSBuildEditorConfig.editorconfig
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.AssemblyInfoInputs.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.AssemblyInfo.cs
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.csproj.CoreCompileInputs.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.sourcelink.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net10.0\MIACopilot.exe
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net10.0\MIACopilot.deps.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net10.0\MIACopilot.runtimeconfig.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net10.0\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net10.0\MIACopilot.pdb
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\refint\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.pdb
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\MIACopilot.genruntimeconfig.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net10.0\ref\MIACopilot.dll

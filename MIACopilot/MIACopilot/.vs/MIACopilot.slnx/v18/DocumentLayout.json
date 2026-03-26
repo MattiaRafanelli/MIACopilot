@@ -1,0 +1,118 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\services\\apprenticeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\services\\apprenticeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\models\\workjournal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\models\\workjournal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\models\\vocationaltrainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\models\\vocationaltrainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\models\\company.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\models\\company.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|c:\\repos\\github\\miacopilot\\miacopilot\\miacopilot\\models\\apprentice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{48B17CA8-3DFE-B751-48EE-4D13716BF3FB}|MIACopilot\\MIACopilot.csproj|solutionrelative:miacopilot\\models\\apprentice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ApprenticeService.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Services\\ApprenticeService.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Services\\ApprenticeService.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Services\\ApprenticeService.cs",
+              "RelativeToolTip": "MIACopilot\\Services\\ApprenticeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:50:32.92Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Program.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Program.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Program.cs",
+              "RelativeToolTip": "MIACopilot\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:41:47.37Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "WorkJournal.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\WorkJournal.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Models\\WorkJournal.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\WorkJournal.cs",
+              "RelativeToolTip": "MIACopilot\\Models\\WorkJournal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:41:46.241Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "VocationalTrainer.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\VocationalTrainer.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Models\\VocationalTrainer.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\VocationalTrainer.cs",
+              "RelativeToolTip": "MIACopilot\\Models\\VocationalTrainer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:41:45.512Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Company.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\Company.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Models\\Company.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\Company.cs",
+              "RelativeToolTip": "MIACopilot\\Models\\Company.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:41:44.859Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Apprentice.cs",
+              "DocumentMoniker": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\Apprentice.cs",
+              "RelativeDocumentMoniker": "MIACopilot\\Models\\Apprentice.cs",
+              "ToolTip": "C:\\repos\\GitHub\\MIACopilot\\MIACopilot\\MIACopilot\\Models\\Apprentice.cs",
+              "RelativeToolTip": "MIACopilot\\Models\\Apprentice.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-25T15:41:44.288Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

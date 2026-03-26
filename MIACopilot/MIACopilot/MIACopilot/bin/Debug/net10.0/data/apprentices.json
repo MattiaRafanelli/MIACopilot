@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "FirstName": "Mattia",
+    "LastName": "Rafanelli",
+    "Email": "mattia.rafanelli@isolutions.ch",
+    "StartDate": "2025-08-04T00:00:00",
+    "CompanyId": 1,
+    "VocationalTrainerId": 1,
+    "WorkJournals": [
+      {
+        "Id": 1,
+        "ApprenticeId": 1,
+        "Date": "2026-03-27T00:00:00",
+        "Title": "C# GitHub Copilot",
+        "Content": "C# GitHub Copilot ist ein komplexes Thema",
+        "WeekNumber": 13
+      }
+    ],
+    "FullName": "Mattia Rafanelli"
+  }
+]

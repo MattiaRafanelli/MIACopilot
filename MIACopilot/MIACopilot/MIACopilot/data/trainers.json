@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "FirstName": "Naydin",
+    "LastName": "Font Palma",
+    "Email": "naydin.fontpalma@isolutions.com",
+    "Phone": "+41 31 560 89 34",
+    "CompanyId": 1
+  },
+  {
+    "Id": 2,
+    "FirstName": "Sandra",
+    "LastName": "Keller",
+    "Email": "sandra.keller@abb.com",
+    "Phone": "+41 79 200 22 02",
+    "CompanyId": 2
+  },
+  {
+    "Id": 3,
+    "FirstName": "Thomas",
+    "LastName": "Wyss",
+    "Email": "thomas.wyss@migros.ch",
+    "Phone": "+41 79 300 33 03",
+    "CompanyId": 3
+  },
+  {
+    "Id": 4,
+    "FirstName": "Claudia",
+    "LastName": "Meier",
+    "Email": "claudia.meier@ubs.com",
+    "Phone": "+41 79 400 44 04",
+    "CompanyId": 4
+  },
+  {
+    "Id": 5,
+    "FirstName": "Roland",
+    "LastName": "Frei",
+    "Email": "roland.frei@roche.com",
+    "Phone": "+41 79 500 55 05",
+    "CompanyId": 5
+  }
+]

@@ -1,0 +1,5 @@
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.GeneratedMSBuildEditorConfig.editorconfig
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.AssemblyInfoInputs.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.AssemblyInfo.cs
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.csproj.CoreCompileInputs.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.sourcelink.json
