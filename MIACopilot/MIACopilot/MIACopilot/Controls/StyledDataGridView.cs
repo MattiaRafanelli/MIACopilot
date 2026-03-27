@@ -6,6 +6,7 @@ namespace MIACopilot.Controls;
 
 public class StyledDataGridView : DataGridView
 {
+    // Initializes a pre-styled, read-only DataGridView with consistent colors, fonts, and behavior.
     public StyledDataGridView()
     {
         Dock = DockStyle.Fill;

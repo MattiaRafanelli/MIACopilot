@@ -20,6 +20,7 @@ public class JournalForm : Form
     private Button btnEdit   = new();
     private Button btnDelete = new();
 
+    // Initializes the form with the selected apprentice and service, builds the UI, and loads data.
     public JournalForm(Apprentice apprentice, ApprenticeService service)
     {
         _apprentice = apprentice;
@@ -28,6 +29,7 @@ public class JournalForm : Form
         LoadJournals();
     }
 
+    // Builds the journal management UI (toolbar + data grid).
     private void BuildUI()
     {
         Text            = $"📓  Work Journals — {_apprentice.FullName}";
@@ -37,10 +39,10 @@ public class JournalForm : Form
         Font            = new Font("Segoe UI", 9.5f);
         BackColor       = Color.White;
 
-        // Toolbar
-        btnAdd    = new Button { Text = "➕ Add",    BackColor = Color.FromArgb(39, 174, 96),  ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
-        btnEdit   = new Button { Text = "✏️ Edit",   BackColor = Color.FromArgb(41, 128, 185),  ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
-        btnDelete = new Button { Text = "🗑 Delete", BackColor = Color.FromArgb(192, 57, 43),  ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
+        // ── Toolbar buttons ────────────────────────────────────────────────
+        btnAdd    = new Button { Text = "➕ Add",    BackColor = Color.FromArgb(39, 174, 96), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
+        btnEdit   = new Button { Text = "✏️ Edit",   BackColor = Color.FromArgb(41, 128, 185), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
+        btnDelete = new Button { Text = "🗑 Delete", BackColor = Color.FromArgb(192, 57, 43), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 110, Height = 34 };
         btnAdd.FlatAppearance.BorderSize    = 0;
         btnEdit.FlatAppearance.BorderSize   = 0;
         btnDelete.FlatAppearance.BorderSize = 0;
@@ -61,7 +63,7 @@ public class JournalForm : Form
         toolbar.Controls.Add(btnEdit);
         toolbar.Controls.Add(btnDelete);
 
-        // Grid
+        // ── Journals grid ───────────────────────────────────────────────────
         dgvJournals = new DataGridView
         {
             Dock                  = DockStyle.Fill,
@@ -89,6 +91,7 @@ public class JournalForm : Form
         Controls.Add(toolbar);
     }
 
+    // Loads all work journals of the apprentice into the grid (with shortened content preview).
     private void LoadJournals()
     {
         dgvJournals.DataSource = _apprentice.WorkJournals.Select(j => new
@@ -101,6 +104,7 @@ public class JournalForm : Form
         }).ToList();
     }
 
+    // Opens the journal detail dialog in "add" mode and saves the new entry.
     private void AddJournal()
     {
         using var form = new JournalDetailForm(null);
@@ -111,6 +115,7 @@ public class JournalForm : Form
         }
     }
 
+    // Opens the journal detail dialog for the selected entry and updates it.
     private void EditJournal()
     {
         if (dgvJournals.SelectedRows.Count == 0)
@@ -132,6 +137,7 @@ public class JournalForm : Form
         }
     }
 
+    // Confirms and deletes the selected journal entry.
     private void DeleteJournal()
     {
         if (dgvJournals.SelectedRows.Count == 0)

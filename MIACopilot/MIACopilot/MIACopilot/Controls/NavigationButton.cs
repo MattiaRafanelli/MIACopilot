@@ -8,6 +8,7 @@ public class NavigationButton : Button
 {
     public bool IsActive { get; private set; }
 
+    // Initializes a styled navigation button with default colors, font, and hover/active behavior.
     public NavigationButton()
     {
         Height = 44;
@@ -25,6 +26,7 @@ public class NavigationButton : Button
         FlatAppearance.MouseDownBackColor = AppColors.NavActive;
     }
 
+    // Sets the active state of the button and updates its background color accordingly.
     public void SetActive(bool active)
     {
         IsActive = active;

@@ -24,6 +24,7 @@ public class TrainerDetailForm : Form
     private ComboBox cmbCompany   = new();
     private TextBox  txtUsername  = new();
 
+    // Initializes the dialog, builds UI, loads the company dropdown, and fills fields or auto-generates username.
     public TrainerDetailForm(VocationalTrainer? existing, CompanyService companyService)
     {
         _existing       = existing;
@@ -34,6 +35,7 @@ public class TrainerDetailForm : Form
         else AutoFillUsername();
     }
 
+    // Builds the form layout, input controls, and Save/Cancel buttons.
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Trainer" : "Edit Trainer";
@@ -66,7 +68,7 @@ public class TrainerDetailForm : Form
             layout.Controls.Add(inputs[i], 1, i);
         }
 
-        // Name → auto-update username for new entries
+        // Rebuilds username automatically when first/last name changes (only in add mode).
         txtFirstName.TextChanged += (_, _) => { if (_existing == null) AutoFillUsername(); };
         txtLastName.TextChanged  += (_, _) => { if (_existing == null) AutoFillUsername(); };
 
@@ -87,6 +89,7 @@ public class TrainerDetailForm : Form
         Controls.Add(layout);
     }
 
+    // Loads all companies from the service and binds them to the company combobox.
     private void LoadDropdown()
     {
         cmbCompany.DisplayMember = "Name";
@@ -94,6 +97,7 @@ public class TrainerDetailForm : Form
         cmbCompany.DataSource    = _companyService.GetAll();
     }
 
+    // Copies values from an existing trainer into the form fields.
     private void FillFields(VocationalTrainer t)
     {
         txtFirstName.Text        = t.FirstName;
@@ -104,6 +108,7 @@ public class TrainerDetailForm : Form
         txtUsername.Text         = t.Username;
     }
 
+    // Generates a username from first initial + last name (lowercase, no spaces) for new trainers.
     private void AutoFillUsername()
     {
         var first = txtFirstName.Text.Trim();
@@ -112,6 +117,7 @@ public class TrainerDetailForm : Form
             txtUsername.Text = $"{first[0].ToString().ToLower()}.{last.ToLower().Replace(" ", "")}";
     }
 
+    // Validates required fields, creates/updates the trainer result object, and closes the dialog with OK.
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||

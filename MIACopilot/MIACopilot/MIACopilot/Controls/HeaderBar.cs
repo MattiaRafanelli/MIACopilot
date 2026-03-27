@@ -13,6 +13,7 @@ public class HeaderBar : UserControl
 
     private readonly FlowLayoutPanel _rightActions = new();
 
+    // Builds the header bar layout with title, search box, search button, and right-aligned action buttons.
     public HeaderBar()
     {
         Dock = DockStyle.Top;
@@ -47,13 +48,16 @@ public class HeaderBar : UserControl
         Controls.Add(_rightActions);
     }
 
+    // Updates the displayed title text.
     public void SetTitle(string title) => TitleLabel.Text = title;
 
+    // Adds a button to the right-aligned action area.
     public void AddRightButton(Button button)
     {
         button.Margin = new Padding(6, 1, 0, 0);
         _rightActions.Controls.Add(button);
     }
 
+    // Removes all buttons from the right-aligned action area.
     public void ClearRightButtons() => _rightActions.Controls.Clear();
 }

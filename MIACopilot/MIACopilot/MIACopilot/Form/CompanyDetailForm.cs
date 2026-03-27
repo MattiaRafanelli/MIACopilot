@@ -22,6 +22,7 @@ public class CompanyDetailForm : Form
     private TextBox txtEmail    = new();
     private TextBox txtIndustry = new();
 
+    // Initializes the dialog, builds the UI, and fills fields if editing an existing company.
     public CompanyDetailForm(Company? existing)
     {
         _existing = existing;
@@ -29,6 +30,7 @@ public class CompanyDetailForm : Form
         if (existing != null) FillFields(existing);
     }
 
+    // Builds the form layout, input fields, and Save/Cancel buttons.
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Company" : "Edit Company";
@@ -46,8 +48,8 @@ public class CompanyDetailForm : Form
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-        string[] labels   = { "Name*", "Industry*", "Address*", "Phone", "Email" };
-        TextBox[] inputs  = { txtName, txtIndustry, txtAddress, txtPhone, txtEmail };
+        string[] labels  = { "Name*", "Industry*", "Address*", "Phone", "Email" };
+        TextBox[] inputs = { txtName, txtIndustry, txtAddress, txtPhone, txtEmail };
 
         for (int i = 0; i < labels.Length; i++)
         {
@@ -78,6 +80,7 @@ public class CompanyDetailForm : Form
         Controls.Add(layout);
     }
 
+    // Copies the existing company data into the input fields.
     private void FillFields(Company c)
     {
         txtName.Text     = c.Name;
@@ -87,6 +90,7 @@ public class CompanyDetailForm : Form
         txtIndustry.Text = c.Industry;
     }
 
+    // Validates required fields, creates the Company result, and closes the dialog with OK.
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtName.Text) ||

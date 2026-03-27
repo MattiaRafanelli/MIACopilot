@@ -1,0 +1,35 @@
+[
+  {
+    "Id": 1,
+    "ApprenticeId": 1,
+    "Subject": "Math",
+    "Value": 6,
+    "Date": "2026-03-27T14:58:24.022333+01:00",
+    "Type": "Final Exam (90\u002B min)",
+    "Notes": "",
+    "FormattedValue": "6.0",
+    "Category": "Excellent"
+  },
+  {
+    "Id": 2,
+    "ApprenticeId": 1,
+    "Subject": "German",
+    "Value": 2.9,
+    "Date": "2026-03-27T14:59:01.9511834+01:00",
+    "Type": "Short Test (15-30 min)",
+    "Notes": "",
+    "FormattedValue": "2.9",
+    "Category": "Failed"
+  },
+  {
+    "Id": 3,
+    "ApprenticeId": 1,
+    "Subject": "English",
+    "Value": 4.5,
+    "Date": "2026-03-27T15:41:14.873",
+    "Type": "Short Test (15-30 min)",
+    "Notes": "",
+    "FormattedValue": "4.5",
+    "Category": "Passed"
+  }
+]

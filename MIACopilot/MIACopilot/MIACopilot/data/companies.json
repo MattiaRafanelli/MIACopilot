@@ -3,7 +3,7 @@
     "Id": 1,
     "Name": "Isolutions AG",
     "Address": "Schanzenstrasse 4c, 3008 Bern",
-    "Phone": "+41 31 560 88 88",
+    "Phone": "\u002B41 31 560 88 88",
     "Email": "info@isolutions.com",
     "Industry": "Information Technologies"
   },
@@ -11,32 +11,40 @@
     "Id": 2,
     "Name": "ABB Schweiz AG",
     "Address": "Brown Boveri Strasse 6, 5400 Baden",
-    "Phone": "+41 58 585 00 00",
+    "Phone": "\u002B41 58 585 00 00",
     "Email": "contact@ch.abb.com",
     "Industry": "Electrical Engineering"
   },
   {
     "Id": 3,
     "Name": "Migros Genossenschaft",
-    "Address": "Limmatstrasse 152, 8005 Zürich",
-    "Phone": "+41 44 277 21 11",
+    "Address": "Limmatstrasse 152, 8005 Z\u00FCrich",
+    "Phone": "\u002B41 44 277 21 11",
     "Email": "info@migros.ch",
     "Industry": "Retail"
   },
   {
     "Id": 4,
     "Name": "UBS Group AG",
-    "Address": "Bahnhofstrasse 45, 8001 Zürich",
-    "Phone": "+41 44 234 11 11",
+    "Address": "Bahnhofstrasse 45, 8001 Z\u00FCrich",
+    "Phone": "\u002B41 44 234 11 11",
     "Email": "info@ubs.com",
-    "Industry": "Banking & Finance"
+    "Industry": "Banking \u0026 Finance"
   },
   {
     "Id": 5,
     "Name": "Roche Diagnostics AG",
     "Address": "Forrenstrasse 2, 6343 Rotkreuz",
-    "Phone": "+41 41 799 61 11",
+    "Phone": "\u002B41 41 799 61 11",
     "Email": "info@roche.com",
     "Industry": "Pharmaceuticals"
+  },
+  {
+    "Id": 6,
+    "Name": "Swisscom",
+    "Address": "Genfergasse 14, 3011 Bern",
+    "Phone": "\u002B41 79 284 09 28",
+    "Email": "info@swisscom.ch",
+    "Industry": "Information Technologies"
   }
 ]

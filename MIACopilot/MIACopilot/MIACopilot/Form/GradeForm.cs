@@ -1,4 +1,4 @@
-using MIACopilot.Models;
+    using MIACopilot.Models;
 using MIACopilot.Services;
 using System.Drawing.Drawing2D;
 
@@ -33,6 +33,7 @@ public class GradeForm : Form
     static readonly Color C_Red    = Color.FromArgb(239, 68, 68);
     static readonly Color C_Purple = Color.FromArgb(139, 92, 246);
 
+    // Stores services, builds the UI, and populates the apprentice dropdown (optionally preselecting one).
     public GradeForm(ApprenticeService apprenticeService, GradeService gradeService, int preSelectId)
     {
         _apprenticeService = apprenticeService;
@@ -43,6 +44,7 @@ public class GradeForm : Form
 
     // ═══════════════════════ BUILD ════════════════════════════════════════════
 
+    // Builds the full split layout (header, grade list, stats card, and chart panel) and wires events.
     void BuildUI()
     {
         Text            = "📊  Grade Tool";
@@ -232,6 +234,7 @@ public class GradeForm : Form
 
     // ═══════════════════════ DATA ═════════════════════════════════════════════
 
+    // Loads all apprentices into the dropdown and applies a preselected apprentice if provided.
     void LoadApprenticeDropdown(int preSelectId)
     {
         cmbApprentice.DisplayMember = "FullName";
@@ -248,6 +251,7 @@ public class GradeForm : Form
             cmbApprentice.SelectedIndex = 0;
     }
 
+    // Updates the current apprentice, rebuilds the filter dropdown, and reloads grades for the selection.
     void OnApprenticeChanged()
     {
         if (cmbApprentice.SelectedValue == null) return;
@@ -256,6 +260,7 @@ public class GradeForm : Form
         LoadGrades();
     }
 
+    // Refreshes the subject filter list based on the current apprentice and resets selection to "All subjects".
     void RefreshFilter()
     {
         cmbFilter.SelectedIndexChanged -= (_, _) => LoadGrades();
@@ -268,6 +273,7 @@ public class GradeForm : Form
         cmbFilter.SelectedIndexChanged += (_, _) => LoadGrades();
     }
 
+    // Loads grades (optionally filtered by subject), binds them to the grid, updates stats, and redraws the chart.
     void LoadGrades()
     {
         if (_current == null) return;
@@ -293,6 +299,7 @@ public class GradeForm : Form
         pnlChart.Invalidate();
     }
 
+    // Computes and displays total grade count, average, and status label colors for the current apprentice.
     void UpdateStats()
     {
         if (_current == null) { lblAvg.Text = "—"; lblStatus.Text = ""; lblCount.Text = ""; return; }
@@ -314,6 +321,7 @@ public class GradeForm : Form
 
     // ═══════════════════════ CHART ════════════════════════════════════════════
 
+    // Draws the "average per subject" bar chart for the current apprentice onto the chart panel.
     void DrawChart(object? sender, PaintEventArgs e)
     {
         var g = e.Graphics;
@@ -385,114 +393,86 @@ public class GradeForm : Form
         g.DrawLine(axPen, pL, pT + cH, pL + cW, pT + cH);
     }
 
-    static GraphicsPath RoundedTop(float x, float y, float w, float h, float r)
-    {
-        var p = new GraphicsPath();
-        p.AddArc(x, y, r, r, 180, 90);
-        p.AddArc(x + w - r, y, r, r, 270, 90);
-        p.AddLine(x + w, y + h, x, y + h);
-        p.CloseFigure();
-        return p;
-    }
-
-    // ═══════════════════════ CRUD ═════════════════════════════════════════════
-
-    void AddGrade()
-    {
-        if (_current == null) { Info("Select an apprentice first."); return; }
-        using var f = new GradeDetailForm(null, _current.Id);
-        if (f.ShowDialog() == DialogResult.OK) { _gradeService.Create(f.Result!); RefreshFilter(); LoadGrades(); }
-    }
-
-    void EditGrade()
-    {
-        var id = GetId(); if (id < 0) return;
-        var gr = _gradeService.GetById(id); if (gr == null) return;
-        using var f = new GradeDetailForm(gr, gr.ApprenticeId);
-        if (f.ShowDialog() == DialogResult.OK) { _gradeService.Update(f.Result!); LoadGrades(); }
-    }
-
-    void DeleteGrade()
-    {
-        var id = GetId(); if (id < 0) return;
-        var gr = _gradeService.GetById(id); if (gr == null) return;
-        if (MessageBox.Show($"Delete '{gr.Subject} {gr.FormattedValue}'?", "Confirm",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        { _gradeService.Delete(id); RefreshFilter(); LoadGrades(); }
-    }
+    // Creates a Graphics
 
     // ═══════════════════════ HELPERS ═════════════════════════════════════════
 
-    void ColourGrades(object? sender, DataGridViewCellFormattingEventArgs e)
+    // Formats the "Grade" cells by parsing the value and applying a color + bold font.
+void ColourGrades(object? sender, DataGridViewCellFormattingEventArgs e)
+{
+    if (dgvGrades.Columns[e.ColumnIndex].Name != "Grade") return;
+    if (e.Value is not string s) return;
+    if (!double.TryParse(s, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out double v)) return;
+
+    e.CellStyle.ForeColor = GradeColor(v);
+    e.CellStyle.Font      = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+}
+
+// Maps a numeric grade value to a color (green/blue/orange/red).
+static Color GradeColor(double v) =>
+    v >= 5.0 ? Color.FromArgb(16, 185, 129)   // green
+  : v >= 4.0 ? Color.FromArgb(59, 130, 246)   // blue
+  : v >= 3.0 ? Color.FromArgb(245, 158, 11)   // orange
+  :            Color.FromArgb(239, 68, 68);    // red
+
+// Reads the selected grade ID from the grid (or shows an info message if nothing is selected).
+int GetId()
+{
+    if (dgvGrades.SelectedRows.Count == 0) { Info("Select a grade first."); return -1; }
+    return (int)dgvGrades.SelectedRows[0].Cells["Id"].Value;
+}
+
+// Shows a simple informational message box.
+static void Info(string msg) =>
+    MessageBox.Show(msg, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+// Creates a styled toolbar button with the given text and background color.
+static Button Btn(string text, Color color) => new()
+{
+    Text      = text,
+    BackColor = color,
+    ForeColor = Color.White,
+    FlatStyle = FlatStyle.Flat,
+    Height    = 34,
+    Width     = 124,
+    Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
+    Cursor    = Cursors.Hand,
+    FlatAppearance = { BorderSize = 0 }
+};
+
+// Creates a consistently styled read-only DataGridView for displaying grades.
+static DataGridView MakeGrid()
+{
+    var d = new DataGridView
     {
-        if (dgvGrades.Columns[e.ColumnIndex].Name != "Grade") return;
-        if (e.Value is not string s) return;
-        if (!double.TryParse(s, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out double v)) return;
-
-        e.CellStyle.ForeColor = GradeColor(v);
-        e.CellStyle.Font      = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-    }
-
-    static Color GradeColor(double v) =>
-        v >= 5.0 ? Color.FromArgb(16, 185, 129)   // green
-      : v >= 4.0 ? Color.FromArgb(59, 130, 246)   // blue
-      : v >= 3.0 ? Color.FromArgb(245, 158, 11)   // orange
-      :            Color.FromArgb(239, 68, 68);    // red
-
-    int GetId()
-    {
-        if (dgvGrades.SelectedRows.Count == 0) { Info("Select a grade first."); return -1; }
-        return (int)dgvGrades.SelectedRows[0].Cells["Id"].Value;
-    }
-
-    static void Info(string msg) =>
-        MessageBox.Show(msg, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-    static Button Btn(string text, Color color) => new()
-    {
-        Text      = text,
-        BackColor = color,
-        ForeColor = Color.White,
-        FlatStyle = FlatStyle.Flat,
-        Height    = 34,
-        Width     = 124,
-        Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
-        Cursor    = Cursors.Hand,
-        FlatAppearance = { BorderSize = 0 }
+        Dock                  = DockStyle.Fill,
+        ReadOnly              = true,
+        AllowUserToAddRows    = false,
+        AllowUserToDeleteRows = false,
+        SelectionMode         = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect           = false,
+        AutoSizeColumnsMode   = DataGridViewAutoSizeColumnsMode.Fill,
+        BackgroundColor       = Color.White,
+        BorderStyle           = BorderStyle.None,
+        RowHeadersVisible     = false,
+        CellBorderStyle       = DataGridViewCellBorderStyle.SingleHorizontal,
+        GridColor             = Color.FromArgb(226, 232, 240),
+        Font                  = new Font("Segoe UI", 9.5f),
+        RowTemplate           = { Height = 40 }
     };
-
-    static DataGridView MakeGrid()
-    {
-        var d = new DataGridView
-        {
-            Dock                  = DockStyle.Fill,
-            ReadOnly              = true,
-            AllowUserToAddRows    = false,
-            AllowUserToDeleteRows = false,
-            SelectionMode         = DataGridViewSelectionMode.FullRowSelect,
-            MultiSelect           = false,
-            AutoSizeColumnsMode   = DataGridViewAutoSizeColumnsMode.Fill,
-            BackgroundColor       = Color.White,
-            BorderStyle           = BorderStyle.None,
-            RowHeadersVisible     = false,
-            CellBorderStyle       = DataGridViewCellBorderStyle.SingleHorizontal,
-            GridColor             = Color.FromArgb(226, 232, 240),
-            Font                  = new Font("Segoe UI", 9.5f),
-            RowTemplate           = { Height = 40 }
-        };
-        var bgBg = Color.FromArgb(248, 250, 252);
-        d.ColumnHeadersDefaultCellStyle.BackColor         = bgBg;
-        d.ColumnHeadersDefaultCellStyle.ForeColor         = Color.FromArgb(100, 116, 139);
-        d.ColumnHeadersDefaultCellStyle.Font              = new Font("Segoe UI", 8.5f, FontStyle.Bold);
-        d.ColumnHeadersDefaultCellStyle.SelectionBackColor = bgBg;
-        d.ColumnHeadersDefaultCellStyle.Padding           = new Padding(6, 0, 0, 0);
-        d.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-        d.ColumnHeadersHeight      = 42;
-        d.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 252, 255);
-        d.DefaultCellStyle.SelectionBackColor = Color.FromArgb(239, 246, 255);
-        d.DefaultCellStyle.SelectionForeColor = Color.FromArgb(15, 23, 42);
-        d.DefaultCellStyle.Padding            = new Padding(8, 0, 8, 0);
-        return d;
-    }
+    var bgBg = Color.FromArgb(248, 250, 252);
+    d.ColumnHeadersDefaultCellStyle.BackColor          = bgBg;
+    d.ColumnHeadersDefaultCellStyle.ForeColor          = Color.FromArgb(100, 116, 139);
+    d.ColumnHeadersDefaultCellStyle.Font               = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+    d.ColumnHeadersDefaultCellStyle.SelectionBackColor = bgBg;
+    d.ColumnHeadersDefaultCellStyle.Padding            = new Padding(6, 0, 0, 0);
+    d.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+    d.ColumnHeadersHeight      = 42;
+    d.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 252, 255);
+    d.DefaultCellStyle.SelectionBackColor       = Color.FromArgb(239, 246, 255);
+    d.DefaultCellStyle.SelectionForeColor       = Color.FromArgb(15, 23, 42);
+    d.DefaultCellStyle.Padding                  = new Padding(8, 0, 8, 0);
+    return d;
+}
 }

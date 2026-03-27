@@ -22,6 +22,7 @@ public class GradeDetailForm : Form
     private static readonly string[] GradeTypes =
         { "Short Test (15-30 min)", "Long Test (45-60 min)", "Final Exam (90+ min)", "Project", "Presentation", "Practical Work" };
 
+    // Initializes the form, builds the UI, fills fields if editing, and updates the preview.
     public GradeDetailForm(Grade? existing, int apprenticeId)
     {
         _existing     = existing;
@@ -31,6 +32,7 @@ public class GradeDetailForm : Form
         UpdatePreview();
     }
 
+    // Builds the grade form UI, configures controls, and wires Save/Cancel actions.
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Grade" : "Edit Grade";
@@ -48,10 +50,10 @@ public class GradeDetailForm : Form
             RowCount    = 8,
             Padding     = new Padding(16)
         };
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-        // Grade spinner: 1.0 – 6.0 in steps of 0.1
+        // Configures the grade spinner (1.0–6.0, step 0.1) and updates preview on change.
         nudGrade.DecimalPlaces = 1;
         nudGrade.Increment     = 0.1m;
         nudGrade.Minimum       = 1.0m;
@@ -61,24 +63,22 @@ public class GradeDetailForm : Form
         nudGrade.Font          = new Font("Segoe UI", 10f, FontStyle.Bold);
         nudGrade.ValueChanged  += (_, _) => UpdatePreview();
 
-        // Type dropdown
+        // Configures the grade type dropdown.
         cmbType.DropDownStyle = ComboBoxStyle.DropDownList;
         cmbType.Items.AddRange(GradeTypes);
         cmbType.SelectedIndex = 0;
         cmbType.Dock          = DockStyle.Fill;
 
-        // Date
+        // Configures the date picker.
         dtpDate.Dock         = DockStyle.Fill;
         dtpDate.Format       = DateTimePickerFormat.Custom;
         dtpDate.CustomFormat = "dd.MM.yyyy";
 
-        // Subject
+        // Configures subject and notes inputs.
         txtSubject.Dock = DockStyle.Fill;
+        txtNotes.Dock   = DockStyle.Fill;
 
-        // Notes
-        txtNotes.Dock = DockStyle.Fill;
-
-        // Grade preview badge
+        // Displays a live preview of grade value and status.
         lblPreview = new Label
         {
             Text      = "4.0  ✅ Passed",
@@ -88,7 +88,7 @@ public class GradeDetailForm : Form
             TextAlign = ContentAlignment.MiddleLeft
         };
 
-        string[] labels   = { "Subject*", "Grade (1–6)*", "Type*", "Date*", "Preview", "Notes" };
+        string[] labels    = { "Subject*", "Grade (1–6)*", "Type*", "Date*", "Preview", "Notes" };
         Control[] controls = { txtSubject, nudGrade, cmbType, dtpDate, lblPreview, txtNotes };
 
         for (int i = 0; i < labels.Length; i++)
@@ -103,7 +103,7 @@ public class GradeDetailForm : Form
             layout.Controls.Add(controls[i], 1, i);
         }
 
-        // Buttons
+        // Creates Save and Cancel buttons and wires their actions.
         var btnSave   = new Button { Text = "💾 Save",   BackColor = Color.FromArgb(39, 174, 96),  ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 100, Height = 34 };
         var btnCancel = new Button { Text = "✖ Cancel", BackColor = Color.FromArgb(149, 165, 166), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 100, Height = 34 };
         btnSave.FlatAppearance.BorderSize   = 0;
@@ -125,7 +125,7 @@ public class GradeDetailForm : Form
         Controls.Add(layout);
     }
 
-    /// <summary>Updates the live preview label when the grade spinner changes.</summary>
+    // Updates the preview label to reflect the current grade value and status.
     private void UpdatePreview()
     {
         double v = (double)nudGrade.Value;
@@ -141,6 +141,7 @@ public class GradeDetailForm : Form
                              :            Color.FromArgb(192, 57, 43);
     }
 
+    // Copies existing grade data into the form fields.
     private void FillFields(Grade g)
     {
         txtSubject.Text  = g.Subject;
@@ -151,6 +152,7 @@ public class GradeDetailForm : Form
         cmbType.SelectedIndex = idx >= 0 ? idx : 0;
     }
 
+    // Validates input, creates the Grade result, and closes the dialog with OK.
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtSubject.Text))

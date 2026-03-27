@@ -16,11 +16,12 @@ public class JournalDetailForm : Form
 
     private readonly WorkJournal? _existing;
 
-    private NumericUpDown  nudWeek   = new();
-    private DateTimePicker dtpDate   = new();
-    private TextBox        txtTitle  = new();
+    private NumericUpDown  nudWeek    = new();
+    private DateTimePicker dtpDate    = new();
+    private TextBox        txtTitle   = new();
     private RichTextBox    rtbContent = new();
 
+    // Initializes the dialog, builds the UI, and fills fields if editing an existing journal.
     public JournalDetailForm(WorkJournal? existing)
     {
         _existing = existing;
@@ -28,6 +29,7 @@ public class JournalDetailForm : Form
         if (existing != null) FillFields(existing);
     }
 
+    // Builds the journal entry form layout, input fields, and Save/Cancel buttons.
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Journal Entry" : "Edit Journal Entry";
@@ -51,34 +53,34 @@ public class JournalDetailForm : Form
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 10));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 46));
 
-        // Week
+        // Configures the week number input.
         nudWeek.Dock    = DockStyle.Fill;
         nudWeek.Minimum = 1;
         nudWeek.Maximum = 200;
 
-        // Date
+        // Configures the date picker.
         dtpDate.Dock         = DockStyle.Fill;
         dtpDate.Format       = DateTimePickerFormat.Custom;
         dtpDate.CustomFormat = "dd.MM.yyyy";
 
-        // Title
+        // Configures the title input.
         txtTitle.Dock = DockStyle.Fill;
 
-        // Content
-        rtbContent.Dock       = DockStyle.Fill;
-        rtbContent.ScrollBars = RichTextBoxScrollBars.Vertical;
+        // Configures the journal content editor.
+        rtbContent.Dock        = DockStyle.Fill;
+        rtbContent.ScrollBars  = RichTextBoxScrollBars.Vertical;
         rtbContent.BorderStyle = BorderStyle.FixedSingle;
 
-        layout.Controls.Add(new Label { Text = "Week Number*",  TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 0);
+        layout.Controls.Add(new Label { Text = "Week Number*", TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 0);
         layout.Controls.Add(nudWeek, 1, 0);
-        layout.Controls.Add(new Label { Text = "Date*",         TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 1);
+        layout.Controls.Add(new Label { Text = "Date*", TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 1);
         layout.Controls.Add(dtpDate, 1, 1);
-        layout.Controls.Add(new Label { Text = "Title*",        TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 2);
+        layout.Controls.Add(new Label { Text = "Title*", TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 2);
         layout.Controls.Add(txtTitle, 1, 2);
-        layout.Controls.Add(new Label { Text = "Content*",      TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 3);
+        layout.Controls.Add(new Label { Text = "Content*", TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Fill }, 0, 3);
         layout.Controls.Add(rtbContent, 1, 3);
 
-        // Buttons
+        // Creates Save and Cancel buttons and wires their actions.
         var btnSave   = new Button { Text = "💾 Save",   BackColor = Color.FromArgb(39, 174, 96),  ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 100, Height = 34 };
         var btnCancel = new Button { Text = "✖ Cancel", BackColor = Color.FromArgb(149, 165, 166), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 100, Height = 34 };
         btnSave.FlatAppearance.BorderSize   = 0;
@@ -96,14 +98,16 @@ public class JournalDetailForm : Form
         Controls.Add(layout);
     }
 
+    // Copies existing journal data into the input fields.
     private void FillFields(WorkJournal j)
     {
-        nudWeek.Value    = j.WeekNumber;
-        dtpDate.Value    = j.Date;
-        txtTitle.Text    = j.Title;
-        rtbContent.Text  = j.Content;
+        nudWeek.Value   = j.WeekNumber;
+        dtpDate.Value   = j.Date;
+        txtTitle.Text   = j.Title;
+        rtbContent.Text = j.Content;
     }
 
+    // Validates required fields, creates the WorkJournal result, and closes the dialog with OK.
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
@@ -116,12 +120,12 @@ public class JournalDetailForm : Form
 
         Result = new WorkJournal
         {
-            Id          = _existing?.Id ?? 0,
+            Id           = _existing?.Id ?? 0,
             ApprenticeId = _existing?.ApprenticeId ?? 0,
-            WeekNumber  = (int)nudWeek.Value,
-            Date        = dtpDate.Value,
-            Title       = txtTitle.Text.Trim(),
-            Content     = rtbContent.Text.Trim()
+            WeekNumber   = (int)nudWeek.Value,
+            Date         = dtpDate.Value,
+            Title        = txtTitle.Text.Trim(),
+            Content      = rtbContent.Text.Trim()
         };
         DialogResult = DialogResult.OK;
     }

@@ -19,16 +19,17 @@ public class ApprenticeDetailForm : Form
     private readonly VocationalTrainerService _trainerService;
 
     // Input controls
-    private TextBox     txtFirstName  = new();
-    private TextBox     txtLastName   = new();
-    private TextBox     txtEmail      = new();
-    private DateTimePicker dtpStart   = new();
-    private ComboBox    cmbCompany    = new();
-    private ComboBox    cmbTrainer    = new();
-    private TextBox     txtUsername   = new();
-    private Button      btnSave       = new();
-    private Button      btnCancel     = new();
+    private TextBox         txtFirstName  = new();
+    private TextBox         txtLastName   = new();
+    private TextBox         txtEmail      = new();
+    private DateTimePicker dtpStart       = new();
+    private ComboBox        cmbCompany    = new();
+    private ComboBox        cmbTrainer    = new();
+    private TextBox         txtUsername   = new();
+    private Button          btnSave       = new();
+    private Button          btnCancel     = new();
 
+    // Initializes the form, builds UI, loads dropdown data, and fills fields or auto-generates username.
     public ApprenticeDetailForm(
         Apprentice? existing,
         CompanyService companyService,
@@ -43,6 +44,7 @@ public class ApprenticeDetailForm : Form
         else AutoFillUsername();
     }
 
+    // Builds the UI layout, configures controls, and wires up events (text changes + button clicks).
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Apprentice" : "Edit Apprentice";
@@ -112,6 +114,7 @@ public class ApprenticeDetailForm : Form
         Controls.Add(layout);
     }
 
+    // Loads companies and trainers from services and binds them to the comboboxes.
     private void LoadDropdowns()
     {
         cmbCompany.DisplayMember = "Name";
@@ -123,6 +126,7 @@ public class ApprenticeDetailForm : Form
         cmbTrainer.DataSource    = _trainerService.GetAll();
     }
 
+    // Copies values from an existing apprentice into the form controls.
     private void FillFields(Apprentice a)
     {
         txtFirstName.Text         = a.FirstName;
@@ -134,6 +138,7 @@ public class ApprenticeDetailForm : Form
         txtUsername.Text          = a.Username;
     }
 
+    // Generates the username based on first initial + last name (lowercase, no spaces).
     private void AutoFillUsername()
     {
         var first = txtFirstName.Text.Trim();
@@ -142,6 +147,7 @@ public class ApprenticeDetailForm : Form
             txtUsername.Text = $"{first[0].ToString().ToLower()}.{last.ToLower().Replace(" ", "")}";
     }
 
+    // Validates required fields, builds the Apprentice result object, and closes with OK.
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||

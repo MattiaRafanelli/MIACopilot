@@ -16,3 +16,4 @@ C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\ref\MI
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\apprentices.json
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\companies.json
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\trainers.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\grades.json

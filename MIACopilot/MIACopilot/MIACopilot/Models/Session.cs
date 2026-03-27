@@ -1,16 +1,38 @@
 namespace MIACopilot.Models;
 
-/// <summary>Available user roles in the system.</summary>
-public enum UserRole { SuperAdmin, Trainer, Apprentice }
+/// <summary>
+/// Available user roles in the system.
+/// Determines access rights and UI behavior.
+/// </summary>
+public enum UserRole
+{
+    SuperAdmin,   // Full system access (administration)
+    Trainer,      // Vocational trainer access
+    Apprentice    // Apprentice (learner) access
+}
 
-/// <summary>Static session — holds the currently logged-in user.</summary>
+/// <summary>
+/// Static session class holding information
+/// about the currently logged-in user.
+/// </summary>
 public static class Session
 {
-    public static UserRole Role      { get; set; }
-    public static int      UserId   { get; set; }   // ApprenticeId or TrainerId
-    public static string   Username { get; set; } = "";
-    public static string   FullName { get; set; } = "";
+    // Role of the current user (Admin / Trainer / Apprentice)
+    public static UserRole Role { get; set; }
 
+    // ID of the logged-in user (ApprenticeId or TrainerId)
+    public static int UserId { get; set; }
+
+    // Username used for login
+    public static string Username { get; set; } = "";
+
+    // Full name of the logged-in user
+    public static string FullName { get; set; } = "";
+
+    /// <summary>
+    /// Clears the session and resets all values.
+    /// Typically called on logout.
+    /// </summary>
     public static void Clear()
     {
         Role     = UserRole.SuperAdmin;
