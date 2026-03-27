@@ -38,10 +38,11 @@ public class VocationalTrainerService
         if (existing == null) return false;
 
         existing.FirstName = updated.FirstName;
-        existing.LastName = updated.LastName;
-        existing.Email = updated.Email;
-        existing.Phone = updated.Phone;
+        existing.LastName  = updated.LastName;
+        existing.Email     = updated.Email;
+        existing.Phone     = updated.Phone;
         existing.CompanyId = updated.CompanyId;
+        existing.Username  = updated.Username;
 
         _dataService.SaveTrainers(_trainers);
         return true;

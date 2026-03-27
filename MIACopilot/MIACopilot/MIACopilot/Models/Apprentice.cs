@@ -14,6 +14,10 @@ public class Apprentice
     public int VocationalTrainerId { get; set; }
     public List<WorkJournal> WorkJournals { get; set; } = new();
 
+    // ── Login credentials ─────────────────────────────────────────────────
+    public string Username { get; set; } = string.Empty;
+    public string Pin      { get; set; } = "0000"; // 4-digit PIN
+
     /// <summary>Returns full name of the apprentice.</summary>
     public string FullName => $"{FirstName} {LastName}";
 

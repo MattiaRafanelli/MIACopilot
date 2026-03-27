@@ -12,6 +12,10 @@ public class VocationalTrainer
     public string Phone { get; set; } = string.Empty;
     public int CompanyId { get; set; }
 
+    // ── Login credentials ─────────────────────────────────────────────────
+    public string Username { get; set; } = string.Empty;
+    public string Pin      { get; set; } = "0000"; // 4-digit PIN
+
     /// <summary>Returns full name of the trainer.</summary>
     public string FullName => $"{FirstName} {LastName}";
 

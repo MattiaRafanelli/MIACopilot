@@ -25,6 +25,7 @@ public class ApprenticeDetailForm : Form
     private DateTimePicker dtpStart   = new();
     private ComboBox    cmbCompany    = new();
     private ComboBox    cmbTrainer    = new();
+    private TextBox     txtUsername   = new();
     private Button      btnSave       = new();
     private Button      btnCancel     = new();
 
@@ -39,12 +40,13 @@ public class ApprenticeDetailForm : Form
         BuildUI();
         LoadDropdowns();
         if (existing != null) FillFields(existing);
+        else AutoFillUsername();
     }
 
     private void BuildUI()
     {
         Text            = _existing == null ? "Add Apprentice" : "Edit Apprentice";
-        Size            = new Size(420, 380);
+        Size            = new Size(420, 420);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox     = false;
         StartPosition   = FormStartPosition.CenterParent;
@@ -55,16 +57,16 @@ public class ApprenticeDetailForm : Form
         {
             Dock        = DockStyle.Fill,
             ColumnCount = 2,
-            RowCount    = 8,
+            RowCount    = 9,
             Padding     = new Padding(16),
         };
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
         string[] labels = { "First Name*", "Last Name*", "Email*",
-                            "Start Date*", "Company*", "Trainer*" };
+                            "Start Date*", "Company*", "Trainer*", "Username*" };
         Control[] inputs = { txtFirstName, txtLastName, txtEmail,
-                              dtpStart, cmbCompany, cmbTrainer };
+                              dtpStart, cmbCompany, cmbTrainer, txtUsername };
 
         for (int i = 0; i < labels.Length; i++)
         {
@@ -89,6 +91,9 @@ public class ApprenticeDetailForm : Form
         btnSave.FlatAppearance.BorderSize   = 0;
         btnCancel.FlatAppearance.BorderSize = 0;
 
+        txtFirstName.TextChanged += (_, _) => { if (_existing == null) AutoFillUsername(); };
+        txtLastName.TextChanged  += (_, _) => { if (_existing == null) AutoFillUsername(); };
+
         btnSave.Click   += OnSave;
         btnCancel.Click += (_, _) => DialogResult = DialogResult.Cancel;
 
@@ -102,7 +107,7 @@ public class ApprenticeDetailForm : Form
         btnPanel.Controls.Add(btnSave);
 
         layout.SetColumnSpan(btnPanel, 2);
-        layout.Controls.Add(btnPanel, 0, 7);
+        layout.Controls.Add(btnPanel, 0, 8);
 
         Controls.Add(layout);
     }
@@ -120,19 +125,29 @@ public class ApprenticeDetailForm : Form
 
     private void FillFields(Apprentice a)
     {
-        txtFirstName.Text     = a.FirstName;
-        txtLastName.Text      = a.LastName;
-        txtEmail.Text         = a.Email;
-        dtpStart.Value        = a.StartDate;
+        txtFirstName.Text         = a.FirstName;
+        txtLastName.Text          = a.LastName;
+        txtEmail.Text             = a.Email;
+        dtpStart.Value            = a.StartDate;
         cmbCompany.SelectedValue  = a.CompanyId;
         cmbTrainer.SelectedValue  = a.VocationalTrainerId;
+        txtUsername.Text          = a.Username;
+    }
+
+    private void AutoFillUsername()
+    {
+        var first = txtFirstName.Text.Trim();
+        var last  = txtLastName.Text.Trim();
+        if (first.Length > 0 && last.Length > 0)
+            txtUsername.Text = $"{first[0].ToString().ToLower()}.{last.ToLower().Replace(" ", "")}";
     }
 
     private void OnSave(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
             string.IsNullOrWhiteSpace(txtLastName.Text)  ||
-            string.IsNullOrWhiteSpace(txtEmail.Text))
+            string.IsNullOrWhiteSpace(txtEmail.Text)     ||
+            string.IsNullOrWhiteSpace(txtUsername.Text))
         {
             MessageBox.Show("Please fill in all required fields (*).",
                 "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -148,7 +163,9 @@ public class ApprenticeDetailForm : Form
             StartDate           = dtpStart.Value,
             CompanyId           = (int)(cmbCompany.SelectedValue ?? 0),
             VocationalTrainerId = (int)(cmbTrainer.SelectedValue ?? 0),
-            WorkJournals        = _existing?.WorkJournals ?? new()
+            WorkJournals        = _existing?.WorkJournals ?? new(),
+            Username            = txtUsername.Text.Trim(),
+            Pin                 = _existing?.Pin ?? "0000"
         };
 
         DialogResult = DialogResult.OK;

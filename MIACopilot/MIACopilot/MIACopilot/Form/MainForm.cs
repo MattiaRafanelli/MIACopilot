@@ -1,218 +1,365 @@
 using MIACopilot.Models;
 using MIACopilot.Services;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
+using System.Windows.Forms;
 
 namespace MIACopilot.Forms;
 
-/// <summary>
-/// Main window with tabs for Apprentices, Companies and Trainers.
-/// </summary>
+/// <summary>Admin portal — read-only overview of all data.</summary>
 public class MainForm : Form
 {
-    // ── Services ─────────────────────────────────────────────────────────────
-    private readonly ApprenticeService    _apprenticeService;
-    private readonly CompanyService       _companyService;
+    private readonly ApprenticeService        _apprenticeService;
+    private readonly CompanyService           _companyService;
     private readonly VocationalTrainerService _trainerService;
+    private readonly GradeService             _gradeService;
 
-    // ── Controls ─────────────────────────────────────────────────────────────
-    private TabControl    tabControl      = new();
-    private TabPage       tabApprentices  = new();
-    private TabPage       tabCompanies    = new();
-    private TabPage       tabTrainers     = new();
+    private Panel pnlSidebar     = new();
+    private Panel pnlContent     = new();
+    private Panel pnlDashboard   = new();
+    private Panel pnlApprentices = new();
+    private Panel pnlCompanies   = new();
+    private Panel pnlTrainers    = new();
+    private Panel pnlGrades      = new();
 
-    // Apprentice tab
-    private DataGridView  dgvApprentices  = new();
-    private Button        btnAddApp       = new();
-    private Button        btnEditApp      = new();
-    private Button        btnDeleteApp    = new();
-    private Button        btnJournals     = new();
-    private TextBox       txtSearchApp    = new();
-    private Button        btnSearchApp    = new();
+    private Button btnNavDashboard   = new();
+    private Button btnNavApprentices = new();
+    private Button btnNavCompanies   = new();
+    private Button btnNavTrainers    = new();
+    private Button btnNavGrades      = new();
 
-    // Company tab
-    private DataGridView  dgvCompanies    = new();
-    private Button        btnAddComp      = new();
-    private Button        btnEditComp     = new();
-    private Button        btnDeleteComp   = new();
-    private TextBox       txtSearchComp   = new();
-    private Button        btnSearchComp   = new();
+    private DataGridView dgvApprentices = new();
+    private DataGridView dgvCompanies   = new();
+    private DataGridView dgvTrainers    = new();
+    private DataGridView dgvGrades      = new();
+    private DataGridView dgvRecent      = new();
 
-    // Trainer tab
-    private DataGridView  dgvTrainers     = new();
-    private Button        btnAddTrain     = new();
-    private Button        btnEditTrain    = new();
-    private Button        btnDeleteTrain  = new();
-    private TextBox       txtSearchTrain  = new();
-    private Button        btnSearchTrain  = new();
+    private TextBox txtSearchApp   = new();
+    private TextBox txtSearchComp  = new();
+    private TextBox txtSearchTrain = new();
+    private TextBox txtSearchGrade = new();
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    private Label lblStatApprentices = new();
+    private Label lblStatCompanies   = new();
+    private Label lblStatTrainers    = new();
+    private Label lblStatGrades      = new();
+
+    static readonly Color C_Sidebar = Color.FromArgb(15, 23, 41);
+    static readonly Color C_SideHov = Color.FromArgb(30, 41, 59);
+    static readonly Color C_Active  = Color.FromArgb(59, 130, 246);
+    static readonly Color C_Bg      = Color.FromArgb(248, 250, 252);
+    static readonly Color C_White   = Color.White;
+    static readonly Color C_Border  = Color.FromArgb(226, 232, 240);
+    static readonly Color C_Text    = Color.FromArgb(15, 23, 42);
+    static readonly Color C_Muted   = Color.FromArgb(100, 116, 139);
+    static readonly Color C_Green   = Color.FromArgb(16, 185, 129);
+    static readonly Color C_Blue    = Color.FromArgb(59, 130, 246);
+    static readonly Color C_Orange  = Color.FromArgb(245, 158, 11);
+    static readonly Color C_Red     = Color.FromArgb(239, 68, 68);
+    static readonly Color C_Purple  = Color.FromArgb(139, 92, 246);
+
+    /// <summary>Initialises services and builds all panels before showing the dashboard.</summary>
     public MainForm(
         ApprenticeService apprenticeService,
         CompanyService companyService,
-        VocationalTrainerService trainerService)
+        VocationalTrainerService trainerService,
+        GradeService gradeService)
     {
         _apprenticeService = apprenticeService;
         _companyService    = companyService;
         _trainerService    = trainerService;
+        _gradeService      = gradeService;
 
-        BuildUI();
+        BuildWindow();
+        BuildSidebar();
+        BuildDashboard();
+        BuildApprenticePanel();
+        BuildCompanyPanel();
+        BuildTrainerPanel();
+        BuildGradesPanel();
+
+        ShowPanel(pnlDashboard, btnNavDashboard);
         RefreshAll();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // UI CONSTRUCTION
-    // ══════════════════════════════════════════════════════════════════════════
+    // ═══════════════════════ SHELL ════════════════════════════════════════════
 
-    /// <summary>Builds all controls and lays them out.</summary>
-    private void BuildUI()
+    /// <summary>Configures the form shell: size, background, sidebar and content containers.</summary>
+    void BuildWindow()
     {
-        // ── Window settings
-        Text            = "MIA Copilot — Apprentice Management";
-        Size            = new Size(1000, 620);
-        StartPosition   = FormStartPosition.CenterScreen;
-        MinimumSize     = new Size(800, 500);
-        Font            = new Font("Segoe UI", 9.5f);
-        BackColor       = Color.FromArgb(245, 247, 250);
+        Text          = "MIA Copilot — Apprentice Management";
+        Size          = new Size(1200, 740);
+        MinimumSize   = new Size(960, 620);
+        StartPosition = FormStartPosition.CenterScreen;
+        BackColor     = C_Bg;
+        Font          = new Font("Segoe UI", 10f);
 
-        // ── TabControl
-        tabControl.Dock     = DockStyle.Fill;
-        tabControl.Font     = new Font("Segoe UI", 10f, FontStyle.Bold);
-        tabControl.Padding  = new Point(16, 6);
+        pnlSidebar.Dock      = DockStyle.Left;
+        pnlSidebar.Width     = 220;
+        pnlSidebar.BackColor = C_Sidebar;
 
-        tabApprentices.Text     = "🎓  Apprentices";
-        tabApprentices.BackColor = Color.White;
-        tabCompanies.Text       = "🏢  Companies";
-        tabCompanies.BackColor  = Color.White;
-        tabTrainers.Text        = "👨‍🏫  Trainers";
-        tabTrainers.BackColor   = Color.White;
+        pnlContent.Dock      = DockStyle.Fill;
+        pnlContent.BackColor = C_Bg;
+        pnlContent.Padding   = new Padding(28, 24, 28, 24);
 
-        tabControl.TabPages.Add(tabApprentices);
-        tabControl.TabPages.Add(tabCompanies);
-        tabControl.TabPages.Add(tabTrainers);
-
-        // ── Build each tab
-        BuildApprenticeTab();
-        BuildCompanyTab();
-        BuildTrainerTab();
-
-        Controls.Add(tabControl);
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /// <summary>Creates a styled action button.</summary>
-    private static Button MakeButton(string text, Color color)
-    {
-        return new Button
+        foreach (var p in new[] { pnlDashboard, pnlApprentices, pnlCompanies, pnlTrainers, pnlGrades })
         {
-            Text      = text,
-            BackColor = color,
-            ForeColor = Color.White,
-            FlatStyle = FlatStyle.Flat,
-            Height    = 34,
-            Width     = 120,
-            Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
-            Cursor    = Cursors.Hand,
-            FlatAppearance = { BorderSize = 0 }
-        };
-    }
-
-    /// <summary>Creates a styled DataGridView.</summary>
-    private static DataGridView MakeGrid()
-    {
-        var dgv = new DataGridView
-        {
-            Dock                  = DockStyle.Fill,
-            ReadOnly              = true,
-            AllowUserToAddRows    = false,
-            AllowUserToDeleteRows = false,
-            SelectionMode         = DataGridViewSelectionMode.FullRowSelect,
-            MultiSelect           = false,
-            AutoSizeColumnsMode   = DataGridViewAutoSizeColumnsMode.Fill,
-            BackgroundColor       = Color.White,
-            BorderStyle           = BorderStyle.None,
-            RowHeadersVisible     = false,
-            CellBorderStyle       = DataGridViewCellBorderStyle.SingleHorizontal,
-            GridColor             = Color.FromArgb(220, 225, 235),
-            Font                  = new Font("Segoe UI", 9.5f),
-        };
-        dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(52, 73, 94);
-        dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        dgv.ColumnHeadersDefaultCellStyle.Font      = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-        dgv.ColumnHeadersHeight = 36;
-        dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
-        dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(41, 128, 185);
-        dgv.DefaultCellStyle.SelectionForeColor = Color.White;
-        return dgv;
-    }
-
-    /// <summary>Creates the toolbar panel (search box + buttons).</summary>
-    private static Panel MakeToolbar(
-        TextBox searchBox, Button searchBtn, Button[] actionButtons)
-    {
-        var panel = new Panel
-        {
-            Dock    = DockStyle.Top,
-            Height  = 52,
-            Padding = new Padding(8, 8, 8, 0),
-            BackColor = Color.White
-        };
-
-        // Search
-        searchBox.Width       = 200;
-        searchBox.Height      = 32;
-        searchBox.Font        = new Font("Segoe UI", 9.5f);
-        searchBox.BorderStyle = BorderStyle.FixedSingle;
-        searchBox.Location    = new Point(8, 9);
-
-        searchBtn.Location = new Point(215, 9);
-        searchBtn.Width    = 80;
-
-        panel.Controls.Add(searchBox);
-        panel.Controls.Add(searchBtn);
-
-        // Action buttons — right-aligned
-        int x = panel.Width - 8;
-        foreach (var btn in actionButtons.Reverse())
-        {
-            btn.Anchor   = AnchorStyles.Top | AnchorStyles.Right;
-            x           -= btn.Width + 6;
-            btn.Location = new Point(x, 9);
-            panel.Controls.Add(btn);
+            p.Dock      = DockStyle.Fill;
+            p.BackColor = C_Bg;
+            pnlContent.Controls.Add(p);
         }
 
-        return panel;
+        Controls.Add(pnlContent);
+        Controls.Add(pnlSidebar);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // APPRENTICE TAB
-    // ══════════════════════════════════════════════════════════════════════════
+    // ═══════════════════════ SIDEBAR ══════════════════════════════════════════
 
-    private void BuildApprenticeTab()
+    /// <summary>Builds the left navigation sidebar with logo, nav buttons, version label and logout.</summary>
+    void BuildSidebar()
     {
-        btnAddApp     = MakeButton("➕ Add",     Color.FromArgb(39, 174, 96));
-        btnEditApp    = MakeButton("✏️ Edit",    Color.FromArgb(41, 128, 185));
-        btnDeleteApp  = MakeButton("🗑 Delete",  Color.FromArgb(192, 57, 43));
-        btnJournals   = MakeButton("📓 Journals", Color.FromArgb(142, 68, 173));
-        btnSearchApp  = MakeButton("🔍 Search",  Color.FromArgb(52, 73, 94));
+        var logo = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = C_Sidebar };
+        logo.Paint += (_, e) =>
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            using var f1 = new Font("Segoe UI", 13f, FontStyle.Bold);
+            using var f2 = new Font("Segoe UI", 8.5f);
+            e.Graphics.DrawString("MIA Copilot", f1, Brushes.White, 20f, 18f);
+            using var br = new SolidBrush(C_Muted);
+            e.Graphics.DrawString("Apprentice Management", f2, br, 20f, 46f);
+        };
 
-        btnAddApp.Click    += (_, _) => AddApprentice();
-        btnEditApp.Click   += (_, _) => EditApprentice();
-        btnDeleteApp.Click += (_, _) => DeleteApprentice();
-        btnJournals.Click  += (_, _) => OpenJournals();
-        btnSearchApp.Click += (_, _) => SearchApprentices();
-        txtSearchApp.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) SearchApprentices(); };
+        var sep = new Panel { Dock = DockStyle.Top, Height = 1, BackColor = Color.FromArgb(30, 41, 59) };
 
-        var toolbar = MakeToolbar(txtSearchApp, btnSearchApp,
-            new[] { btnAddApp, btnEditApp, btnDeleteApp, btnJournals });
+        btnNavDashboard   = NavBtn("🏠   Dashboard");
+        btnNavApprentices = NavBtn("🎓   Apprentices");
+        btnNavCompanies   = NavBtn("🏢   Companies");
+        btnNavTrainers    = NavBtn("👤   Trainers");
+        btnNavGrades      = NavBtn("📊   Grades");
+
+        btnNavDashboard.Click   += (_, _) => ShowPanel(pnlDashboard,   btnNavDashboard);
+        btnNavApprentices.Click += (_, _) => ShowPanel(pnlApprentices, btnNavApprentices);
+        btnNavCompanies.Click   += (_, _) => ShowPanel(pnlCompanies,   btnNavCompanies);
+        btnNavTrainers.Click    += (_, _) => ShowPanel(pnlTrainers,    btnNavTrainers);
+        btnNavGrades.Click      += (_, _) => { ShowPanel(pnlGrades, btnNavGrades); LoadGrades(); };
+
+        var ver = new Label
+        {
+            Text      = "v1.0  ·  .NET 8  ·  WinForms",
+            ForeColor = Color.FromArgb(51, 65, 85),
+            BackColor = C_Sidebar,
+            Font      = new Font("Segoe UI", 7.5f),
+            Dock      = DockStyle.Bottom,
+            Height    = 28,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+
+        var btnLogout = new Button
+        {
+            Text      = "⎋   Logout",
+            Dock      = DockStyle.Bottom,
+            Height    = 46,
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.FromArgb(148, 163, 184),
+            BackColor = C_Sidebar,
+            Font      = new Font("Segoe UI", 10f),
+            TextAlign = ContentAlignment.MiddleLeft,
+            Padding   = new Padding(16, 0, 0, 0),
+            Cursor    = Cursors.Hand
+        };
+        btnLogout.FlatAppearance.BorderSize         = 0;
+        btnLogout.FlatAppearance.MouseOverBackColor = C_SideHov;
+        btnLogout.Click += (_, _) => { DialogResult = DialogResult.Retry; Close(); };
+
+        var sepBottom = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = Color.FromArgb(30, 41, 59) };
+
+        pnlSidebar.Controls.Add(ver);
+        pnlSidebar.Controls.Add(btnLogout);
+        pnlSidebar.Controls.Add(sepBottom);
+        pnlSidebar.Controls.Add(btnNavGrades);
+        pnlSidebar.Controls.Add(btnNavTrainers);
+        pnlSidebar.Controls.Add(btnNavCompanies);
+        pnlSidebar.Controls.Add(btnNavApprentices);
+        pnlSidebar.Controls.Add(btnNavDashboard);
+        pnlSidebar.Controls.Add(sep);
+        pnlSidebar.Controls.Add(logo);
+    }
+
+    /// <summary>Creates a flat-style navigation button for the sidebar.</summary>
+    Button NavBtn(string text)
+    {
+        var b = new Button
+        {
+            Text      = "  " + text,
+            Dock      = DockStyle.Top,
+            Height    = 48,
+            FlatStyle = FlatStyle.Flat,
+            ForeColor = Color.FromArgb(148, 163, 184),
+            BackColor = C_Sidebar,
+            Font      = new Font("Segoe UI", 10f),
+            TextAlign = ContentAlignment.MiddleLeft,
+            Cursor    = Cursors.Hand
+        };
+        b.FlatAppearance.BorderSize         = 0;
+        b.FlatAppearance.MouseOverBackColor = C_SideHov;
+        return b;
+    }
+
+    /// <summary>Shows the target panel, highlights the active nav button, and refreshes dashboard if needed.</summary>
+    void ShowPanel(Panel target, Button nav)
+    {
+        foreach (var p in new[] { pnlDashboard, pnlApprentices, pnlCompanies, pnlTrainers, pnlGrades })
+            p.Visible = p == target;
+
+        foreach (Control c in pnlSidebar.Controls)
+            if (c is Button b) { b.BackColor = C_Sidebar; b.ForeColor = Color.FromArgb(148, 163, 184); b.Font = new Font("Segoe UI", 10f); }
+
+        nav.BackColor = C_Active;
+        nav.ForeColor = Color.White;
+        nav.Font      = new Font("Segoe UI", 10f, FontStyle.Bold);
+
+        if (target == pnlDashboard) UpdateDashboardStats();
+    }
+
+    // ═══════════════════════ DASHBOARD ════════════════════════════════════════
+
+    /// <summary>Builds the dashboard panel: four stat cards and a recent-apprentices table.</summary>
+    void BuildDashboard()
+    {
+        var title = PageTitle("Dashboard", "Overview of your management data");
+
+        var cards = new TableLayoutPanel
+        {
+            Dock        = DockStyle.Top,
+            Height      = 120,
+            ColumnCount = 4,
+            RowCount    = 1,
+            BackColor   = C_Bg,
+            Padding     = new Padding(0, 0, 0, 14)
+        };
+        for (int i = 0; i < 4; i++)
+            cards.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
+
+        lblStatApprentices = StatNum(C_Blue);
+        lblStatCompanies   = StatNum(C_Green);
+        lblStatTrainers    = StatNum(C_Purple);
+        lblStatGrades      = StatNum(C_Orange);
+
+        cards.Controls.Add(StatCard("🎓  Apprentices",  lblStatApprentices, C_Blue),   0, 0);
+        cards.Controls.Add(StatCard("🏢  Companies",    lblStatCompanies,   C_Green),  1, 0);
+        cards.Controls.Add(StatCard("👤  Trainers",     lblStatTrainers,    C_Purple), 2, 0);
+        cards.Controls.Add(StatCard("📊  Total Grades", lblStatGrades,      C_Orange), 3, 0);
+
+        var recentHdr = new Label
+        {
+            Text      = "Recent Apprentices",
+            Font      = new Font("Segoe UI", 11f, FontStyle.Bold),
+            ForeColor = C_Text,
+            BackColor = C_White,
+            Dock      = DockStyle.Top,
+            Height    = 48,
+            Padding   = new Padding(18, 14, 0, 0)
+        };
+        recentHdr.Paint += (_, e) =>
+        {
+            using var pen = new Pen(C_Border);
+            e.Graphics.DrawLine(pen, 0, recentHdr.Height - 1, recentHdr.Width, recentHdr.Height - 1);
+        };
+
+        dgvRecent = MakeGrid();
+        var card = CardPanel();
+        card.Controls.Add(dgvRecent);
+        card.Controls.Add(recentHdr);
+
+        pnlDashboard.Controls.Add(card);
+        pnlDashboard.Controls.Add(cards);
+        pnlDashboard.Controls.Add(title);
+    }
+
+    /// <summary>Creates a large bold number label used inside a stat card.</summary>
+    Label StatNum(Color color) => new()
+    {
+        Text      = "0",
+        Font      = new Font("Segoe UI", 30f, FontStyle.Bold),
+        ForeColor = color,
+        TextAlign = ContentAlignment.MiddleCenter,
+        Dock      = DockStyle.Fill,
+        BackColor = C_White
+    };
+
+    /// <summary>Builds a stat card panel with a 3-px colored top bar, title text and a number label.</summary>
+    Panel StatCard(string title, Label numLabel, Color accent)
+    {
+        var card = new Panel { Dock = DockStyle.Fill, BackColor = C_White, Margin = new Padding(0, 0, 12, 0) };
+        card.Paint += (_, e) =>
+        {
+            using var pen = new Pen(C_Border, 0.5f);
+            e.Graphics.DrawRectangle(pen, 0, 0, card.Width - 1, card.Height - 1);
+            using var bar = new SolidBrush(accent);
+            e.Graphics.FillRectangle(bar, 0, 0, card.Width, 3);
+        };
+
+        var lbl = new Label
+        {
+            Text      = title,
+            Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
+            ForeColor = C_Muted,
+            BackColor = C_White,
+            Dock      = DockStyle.Top,
+            Height    = 34,
+            Padding   = new Padding(16, 12, 0, 0)
+        };
+        numLabel.BackColor = C_White;
+        card.Controls.Add(numLabel);
+        card.Controls.Add(lbl);
+        return card;
+    }
+
+    /// <summary>Reloads stat counts and the recent-apprentices grid with the latest data.</summary>
+    void UpdateDashboardStats()
+    {
+        lblStatApprentices.Text = _apprenticeService.GetAll().Count.ToString();
+        lblStatCompanies.Text   = _companyService.GetAll().Count.ToString();
+        lblStatTrainers.Text    = _trainerService.GetAll().Count.ToString();
+        lblStatGrades.Text      = _gradeService.GetAll().Count.ToString();
+
+        dgvRecent.DataSource = _apprenticeService.GetAll()
+            .OrderByDescending(a => a.StartDate).Take(10)
+            .Select(a => new
+            {
+                a.Id,
+                a.FirstName,
+                a.LastName,
+                Start   = a.StartDate.ToString("dd.MM.yyyy"),
+                Company = _companyService.GetById(a.CompanyId)?.Name ?? "—",
+                Trainer = _trainerService.GetById(a.VocationalTrainerId)?.FullName ?? "—",
+                Avg     = _gradeService.GetAverage(a.Id) is double d && d > 0 ? d.ToString("0.0") : "—"
+            }).ToList();
+        AutoSizeCols(dgvRecent, "Trainer");
+    }
+
+    // ═══════════════════════ APPRENTICES (read-only) ══════════════════════════
+
+    /// <summary>Builds the read-only apprentice list panel with a search bar.</summary>
+    void BuildApprenticePanel()
+    {
+        var title  = PageTitle("Apprentices", "View all apprentices");
+        var search = SearchBar(txtSearchApp, "Search by name…",
+            () => LoadApprentices(string.IsNullOrWhiteSpace(txtSearchApp.Text)
+                    ? null : _apprenticeService.SearchByName(txtSearchApp.Text)));
 
         dgvApprentices = MakeGrid();
+        var card = CardPanel();
+        card.Controls.Add(dgvApprentices);
+        card.Controls.Add(search);
 
-        tabApprentices.Controls.Add(dgvApprentices);
-        tabApprentices.Controls.Add(toolbar);
+        pnlApprentices.Controls.Add(card);
+        pnlApprentices.Controls.Add(title);
     }
 
-    /// <summary>Loads apprentices into the grid.</summary>
-    private void LoadApprentices(List<Apprentice>? list = null)
+    /// <summary>Loads apprentices into the grid; uses the provided list or all apprentices if null.</summary>
+    void LoadApprentices(List<Apprentice>? list = null)
     {
         list ??= _apprenticeService.GetAll();
         dgvApprentices.DataSource = list.Select(a => new
@@ -221,181 +368,68 @@ public class MainForm : Form
             a.FirstName,
             a.LastName,
             a.Email,
-            Start       = a.StartDate.ToString("dd.MM.yyyy"),
-            Company     = _companyService.GetById(a.CompanyId)?.Name ?? "—",
-            Trainer     = _trainerService.GetById(a.VocationalTrainerId)?.FullName ?? "—",
-            Journals    = a.WorkJournals.Count
+            Start    = a.StartDate.ToString("dd.MM.yyyy"),
+            Company  = _companyService.GetById(a.CompanyId)?.Name ?? "—",
+            Trainer  = _trainerService.GetById(a.VocationalTrainerId)?.FullName ?? "—",
+            Journals = a.WorkJournals.Count,
+            Grades   = _gradeService.GetByApprentice(a.Id).Count,
+            Average  = _gradeService.GetAverage(a.Id) is double d && d > 0 ? d.ToString("0.0") : "—"
         }).ToList();
+        AutoSizeCols(dgvApprentices, "Email");
     }
 
-    private void SearchApprentices()
+    // ═══════════════════════ COMPANIES (read-only) ════════════════════════════
+
+    /// <summary>Builds the read-only company list panel with a search bar.</summary>
+    void BuildCompanyPanel()
     {
-        var q = txtSearchApp.Text.Trim();
-        LoadApprentices(string.IsNullOrEmpty(q)
-            ? null
-            : _apprenticeService.SearchByName(q));
-    }
-
-    private void AddApprentice()
-    {
-        using var form = new ApprenticeDetailForm(null, _companyService, _trainerService);
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            _apprenticeService.Create(form.Result!);
-            LoadApprentices();
-        }
-    }
-
-    private void EditApprentice()
-    {
-        var selected = GetSelectedId(dgvApprentices);
-        if (selected < 0) return;
-        var apprentice = _apprenticeService.GetById(selected);
-        if (apprentice == null) return;
-
-        using var form = new ApprenticeDetailForm(apprentice, _companyService, _trainerService);
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            _apprenticeService.Update(form.Result!);
-            LoadApprentices();
-        }
-    }
-
-    private void DeleteApprentice()
-    {
-        var selected = GetSelectedId(dgvApprentices);
-        if (selected < 0) return;
-        var a = _apprenticeService.GetById(selected);
-        if (a == null) return;
-
-        if (Confirm($"Delete apprentice '{a.FullName}'?"))
-        {
-            _apprenticeService.Delete(selected);
-            LoadApprentices();
-        }
-    }
-
-    private void OpenJournals()
-    {
-        var selected = GetSelectedId(dgvApprentices);
-        if (selected < 0) return;
-        var apprentice = _apprenticeService.GetById(selected);
-        if (apprentice == null) return;
-
-        using var form = new JournalForm(apprentice, _apprenticeService);
-        form.ShowDialog();
-        LoadApprentices();
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // COMPANY TAB
-    // ══════════════════════════════════════════════════════════════════════════
-
-    private void BuildCompanyTab()
-    {
-        btnAddComp     = MakeButton("➕ Add",    Color.FromArgb(39, 174, 96));
-        btnEditComp    = MakeButton("✏️ Edit",   Color.FromArgb(41, 128, 185));
-        btnDeleteComp  = MakeButton("🗑 Delete", Color.FromArgb(192, 57, 43));
-        btnSearchComp  = MakeButton("🔍 Search", Color.FromArgb(52, 73, 94));
-
-        btnAddComp.Click     += (_, _) => AddCompany();
-        btnEditComp.Click    += (_, _) => EditCompany();
-        btnDeleteComp.Click  += (_, _) => DeleteCompany();
-        btnSearchComp.Click  += (_, _) => SearchCompanies();
-        txtSearchComp.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) SearchCompanies(); };
-
-        var toolbar = MakeToolbar(txtSearchComp, btnSearchComp,
-            new[] { btnAddComp, btnEditComp, btnDeleteComp });
+        var title  = PageTitle("Companies", "View all registered companies");
+        var search = SearchBar(txtSearchComp, "Search by name…",
+            () => LoadCompanies(string.IsNullOrWhiteSpace(txtSearchComp.Text)
+                    ? null : _companyService.SearchByName(txtSearchComp.Text)));
 
         dgvCompanies = MakeGrid();
+        var card = CardPanel();
+        card.Controls.Add(dgvCompanies);
+        card.Controls.Add(search);
 
-        tabCompanies.Controls.Add(dgvCompanies);
-        tabCompanies.Controls.Add(toolbar);
+        pnlCompanies.Controls.Add(card);
+        pnlCompanies.Controls.Add(title);
     }
 
-    private void LoadCompanies(List<Company>? list = null)
+    /// <summary>Loads companies into the grid; uses the provided list or all companies if null.</summary>
+    void LoadCompanies(List<Company>? list = null)
     {
         list ??= _companyService.GetAll();
         dgvCompanies.DataSource = list.Select(c => new
         {
-            c.Id, c.Name, c.Industry, c.Address, c.Phone, c.Email
+            c.Id, c.Name, c.Industry, c.Address, c.Phone, c.Email,
+            Apprentices = _apprenticeService.FilterByCompany(c.Id).Count
         }).ToList();
+        AutoSizeCols(dgvCompanies, "Address");
     }
 
-    private void SearchCompanies()
+    // ═══════════════════════ TRAINERS (read-only) ═════════════════════════════
+
+    /// <summary>Builds the read-only trainer list panel with a search bar.</summary>
+    void BuildTrainerPanel()
     {
-        var q = txtSearchComp.Text.Trim();
-        LoadCompanies(string.IsNullOrEmpty(q)
-            ? null
-            : _companyService.SearchByName(q));
-    }
-
-    private void AddCompany()
-    {
-        using var form = new CompanyDetailForm(null);
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            _companyService.Create(form.Result!);
-            LoadCompanies();
-        }
-    }
-
-    private void EditCompany()
-    {
-        var selected = GetSelectedId(dgvCompanies);
-        if (selected < 0) return;
-        var company = _companyService.GetById(selected);
-        if (company == null) return;
-
-        using var form = new CompanyDetailForm(company);
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            _companyService.Update(form.Result!);
-            LoadCompanies();
-        }
-    }
-
-    private void DeleteCompany()
-    {
-        var selected = GetSelectedId(dgvCompanies);
-        if (selected < 0) return;
-        var c = _companyService.GetById(selected);
-        if (c == null) return;
-
-        if (Confirm($"Delete company '{c.Name}'?"))
-        {
-            _companyService.Delete(selected);
-            LoadCompanies();
-        }
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // TRAINER TAB
-    // ══════════════════════════════════════════════════════════════════════════
-
-    private void BuildTrainerTab()
-    {
-        btnAddTrain    = MakeButton("➕ Add",    Color.FromArgb(39, 174, 96));
-        btnEditTrain   = MakeButton("✏️ Edit",   Color.FromArgb(41, 128, 185));
-        btnDeleteTrain = MakeButton("🗑 Delete", Color.FromArgb(192, 57, 43));
-        btnSearchTrain = MakeButton("🔍 Search", Color.FromArgb(52, 73, 94));
-
-        btnAddTrain.Click    += (_, _) => AddTrainer();
-        btnEditTrain.Click   += (_, _) => EditTrainer();
-        btnDeleteTrain.Click += (_, _) => DeleteTrainer();
-        btnSearchTrain.Click += (_, _) => SearchTrainers();
-        txtSearchTrain.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) SearchTrainers(); };
-
-        var toolbar = MakeToolbar(txtSearchTrain, btnSearchTrain,
-            new[] { btnAddTrain, btnEditTrain, btnDeleteTrain });
+        var title  = PageTitle("Vocational Trainers", "View all trainers");
+        var search = SearchBar(txtSearchTrain, "Search by name…",
+            () => LoadTrainers(string.IsNullOrWhiteSpace(txtSearchTrain.Text)
+                    ? null : _trainerService.SearchByName(txtSearchTrain.Text)));
 
         dgvTrainers = MakeGrid();
+        var card = CardPanel();
+        card.Controls.Add(dgvTrainers);
+        card.Controls.Add(search);
 
-        tabTrainers.Controls.Add(dgvTrainers);
-        tabTrainers.Controls.Add(toolbar);
+        pnlTrainers.Controls.Add(card);
+        pnlTrainers.Controls.Add(title);
     }
 
-    private void LoadTrainers(List<VocationalTrainer>? list = null)
+    /// <summary>Loads trainers into the grid; uses the provided list or all trainers if null.</summary>
+    void LoadTrainers(List<VocationalTrainer>? list = null)
     {
         list ??= _trainerService.GetAll();
         dgvTrainers.DataSource = list.Select(t => new
@@ -405,83 +439,163 @@ public class MainForm : Form
             t.LastName,
             t.Email,
             t.Phone,
-            Company = _companyService.GetById(t.CompanyId)?.Name ?? "—"
+            Company     = _companyService.GetById(t.CompanyId)?.Name ?? "—",
+            Apprentices = _apprenticeService.GetAll().Count(a => a.VocationalTrainerId == t.Id)
         }).ToList();
+        AutoSizeCols(dgvTrainers, "Email");
     }
 
-    private void SearchTrainers()
+    // ═══════════════════════ GRADES (read-only) ═══════════════════════════════
+
+    /// <summary>Builds the read-only grades overview panel with a search bar.</summary>
+    void BuildGradesPanel()
     {
-        var q = txtSearchTrain.Text.Trim();
-        LoadTrainers(string.IsNullOrEmpty(q)
-            ? null
-            : _trainerService.SearchByName(q));
+        var title  = PageTitle("Grades", "Overview of all apprentice grades");
+        var search = SearchBar(txtSearchGrade, "Search by apprentice name…",
+            () => LoadGrades(txtSearchGrade.Text));
+
+        dgvGrades = MakeGrid();
+        dgvGrades.CellFormatting += ColourGradeCell;
+        var card = CardPanel();
+        card.Controls.Add(dgvGrades);
+        card.Controls.Add(search);
+
+        pnlGrades.Controls.Add(card);
+        pnlGrades.Controls.Add(title);
     }
 
-    private void AddTrainer()
+    /// <summary>Loads all grades into the grid, optionally filtered by apprentice name.</summary>
+    void LoadGrades(string filter = "")
     {
-        using var form = new TrainerDetailForm(null, _companyService);
-        if (form.ShowDialog() == DialogResult.OK)
+        var all = _gradeService.GetAll();
+        if (!string.IsNullOrWhiteSpace(filter))
         {
-            _trainerService.Create(form.Result!);
-            LoadTrainers();
+            var ids = _apprenticeService.SearchByName(filter).Select(a => a.Id).ToHashSet();
+            all = all.Where(g => ids.Contains(g.ApprenticeId)).ToList();
+        }
+        dgvGrades.DataSource = all.OrderByDescending(g => g.Date).Select(g => new
+        {
+            g.Id,
+            Apprentice = _apprenticeService.GetById(g.ApprenticeId)?.FullName ?? "—",
+            g.Subject,
+            Grade  = g.FormattedValue,
+            g.Type,
+            Date   = g.Date.ToString("dd.MM.yyyy"),
+            Status = g.Category,
+            g.Notes
+        }).ToList();
+        AutoSizeCols(dgvGrades, "Notes");
+    }
+
+    /// <summary>Colors the Grade column green/blue/orange/red based on the numeric score.</summary>
+    void ColourGradeCell(object? sender, DataGridViewCellFormattingEventArgs e)
+    {
+        if (dgvGrades.Columns[e.ColumnIndex].Name != "Grade") return;
+        if (e.Value is not string s) return;
+        if (!double.TryParse(s, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out double v)) return;
+        e.CellStyle.ForeColor = v >= 5.0 ? C_Green : v >= 4.0 ? C_Blue : v >= 3.0 ? C_Orange : C_Red;
+        e.CellStyle.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
+    }
+
+    // ═══════════════════════ HELPERS ══════════════════════════════════════════
+
+    /// <summary>Reloads all data grids and updates the dashboard statistics.</summary>
+    void RefreshAll() { LoadApprentices(); LoadCompanies(); LoadTrainers(); UpdateDashboardStats(); }
+
+    /// <summary>Sets each column to size by content; the named column fills remaining width.</summary>
+    static void AutoSizeCols(DataGridView d, string fillCol)
+    {
+        d.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+        foreach (DataGridViewColumn col in d.Columns)
+        {
+            col.AutoSizeMode = col.Name == fillCol
+                ? DataGridViewAutoSizeColumnMode.Fill
+                : DataGridViewAutoSizeColumnMode.AllCells;
         }
     }
 
-    private void EditTrainer()
+    /// <summary>Creates a page-header panel; title and subtitle are painted directly to avoid label artifacts.</summary>
+    static Panel PageTitle(string title, string sub)
     {
-        var selected = GetSelectedId(dgvTrainers);
-        if (selected < 0) return;
-        var trainer = _trainerService.GetById(selected);
-        if (trainer == null) return;
-
-        using var form = new TrainerDetailForm(trainer, _companyService);
-        if (form.ShowDialog() == DialogResult.OK)
+        var p = new Panel { Dock = DockStyle.Top, Height = 72, BackColor = C_Bg };
+        p.Paint += (_, e) =>
         {
-            _trainerService.Update(form.Result!);
-            LoadTrainers();
-        }
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            using var fT = new Font("Segoe UI", 18f, FontStyle.Bold);
+            using var fS = new Font("Segoe UI", 9.5f);
+            using var bT = new SolidBrush(C_Text);
+            using var bS = new SolidBrush(C_Muted);
+            e.Graphics.DrawString(title, fT, bT, 0f, 4f);
+            e.Graphics.DrawString(sub,   fS, bS, 2f, 46f);
+        };
+        return p;
     }
 
-    private void DeleteTrainer()
+    /// <summary>Creates a white card panel with a subtle border drawn via Paint.</summary>
+    static Panel CardPanel()
     {
-        var selected = GetSelectedId(dgvTrainers);
-        if (selected < 0) return;
-        var t = _trainerService.GetById(selected);
-        if (t == null) return;
-
-        if (Confirm($"Delete trainer '{t.FullName}'?"))
+        var p = new Panel { Dock = DockStyle.Fill, BackColor = C_White };
+        p.Paint += (_, e) =>
         {
-            _trainerService.Delete(selected);
-            LoadTrainers();
-        }
+            using var pen = new Pen(C_Border, 0.5f);
+            e.Graphics.DrawRectangle(pen, 0, 0, p.Width - 1, p.Height - 1);
+        };
+        return p;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SHARED HELPERS
-    // ══════════════════════════════════════════════════════════════════════════
-
-    /// <summary>Refreshes all three grids.</summary>
-    private void RefreshAll()
+    /// <summary>Creates a search toolbar panel containing a single text input that triggers onSearch.</summary>
+    static Panel SearchBar(TextBox sb, string placeholder, Action onSearch)
     {
-        LoadApprentices();
-        LoadCompanies();
-        LoadTrainers();
-    }
-
-    /// <summary>Returns the ID of the selected row, or -1 if nothing selected.</summary>
-    private static int GetSelectedId(DataGridView dgv)
-    {
-        if (dgv.SelectedRows.Count == 0)
+        var panel = new Panel { Dock = DockStyle.Top, Height = 58, BackColor = C_White };
+        panel.Paint += (_, e) =>
         {
-            MessageBox.Show("Please select a row first.", "No selection",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return -1;
-        }
-        return (int)dgv.SelectedRows[0].Cells["Id"].Value;
+            using var pen = new Pen(C_Border);
+            e.Graphics.DrawLine(pen, 0, panel.Height - 1, panel.Width, panel.Height - 1);
+        };
+        sb.Width           = 280;
+        sb.Height          = 36;
+        sb.Font            = new Font("Segoe UI", 10f);
+        sb.BorderStyle     = BorderStyle.FixedSingle;
+        sb.Location        = new Point(16, 11);
+        sb.PlaceholderText = placeholder;
+        sb.TextChanged    += (_, _) => { if (string.IsNullOrWhiteSpace(sb.Text)) onSearch(); };
+        sb.KeyDown        += (_, e) => { if (e.KeyCode == Keys.Enter) onSearch(); };
+        panel.Controls.Add(sb);
+        return panel;
     }
 
-    /// <summary>Shows a Yes/No confirmation dialog.</summary>
-    private static bool Confirm(string message) =>
-        MessageBox.Show(message, "Confirm", MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question) == DialogResult.Yes;
+    /// <summary>Creates a consistently styled read-only DataGridView with zebra rows and blue selection.</summary>
+    static DataGridView MakeGrid()
+    {
+        var d = new DataGridView
+        {
+            Dock                  = DockStyle.Fill,
+            ReadOnly              = true,
+            AllowUserToAddRows    = false,
+            AllowUserToDeleteRows = false,
+            SelectionMode         = DataGridViewSelectionMode.FullRowSelect,
+            MultiSelect           = false,
+            AutoSizeColumnsMode   = DataGridViewAutoSizeColumnsMode.AllCells,
+            BackgroundColor       = C_White,
+            BorderStyle           = BorderStyle.None,
+            RowHeadersVisible     = false,
+            CellBorderStyle       = DataGridViewCellBorderStyle.SingleHorizontal,
+            GridColor             = C_Border,
+            Font                  = new Font("Segoe UI", 10f),
+            RowTemplate           = { Height = 42 }
+        };
+        d.ColumnHeadersDefaultCellStyle.BackColor          = C_Bg;
+        d.ColumnHeadersDefaultCellStyle.ForeColor          = C_Muted;
+        d.ColumnHeadersDefaultCellStyle.Font               = new Font("Segoe UI", 9f, FontStyle.Bold);
+        d.ColumnHeadersDefaultCellStyle.SelectionBackColor = C_Bg;
+        d.ColumnHeadersDefaultCellStyle.Padding            = new Padding(10, 0, 0, 0);
+        d.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+        d.ColumnHeadersHeight      = 44;
+        d.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 251, 253);
+        d.DefaultCellStyle.SelectionBackColor       = Color.FromArgb(239, 246, 255);
+        d.DefaultCellStyle.SelectionForeColor       = C_Text;
+        d.DefaultCellStyle.Padding                  = new Padding(10, 0, 10, 0);
+        return d;
+    }
 }

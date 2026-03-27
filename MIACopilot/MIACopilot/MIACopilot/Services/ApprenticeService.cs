@@ -37,12 +37,13 @@ public class ApprenticeService
         var existing = GetById(updated.Id);
         if (existing == null) return false;
 
-        existing.FirstName = updated.FirstName;
-        existing.LastName = updated.LastName;
-        existing.Email = updated.Email;
-        existing.StartDate = updated.StartDate;
-        existing.CompanyId = updated.CompanyId;
+        existing.FirstName           = updated.FirstName;
+        existing.LastName            = updated.LastName;
+        existing.Email               = updated.Email;
+        existing.StartDate           = updated.StartDate;
+        existing.CompanyId           = updated.CompanyId;
         existing.VocationalTrainerId = updated.VocationalTrainerId;
+        existing.Username            = updated.Username;
 
         _dataService.SaveApprentices(_apprentices);
         return true;

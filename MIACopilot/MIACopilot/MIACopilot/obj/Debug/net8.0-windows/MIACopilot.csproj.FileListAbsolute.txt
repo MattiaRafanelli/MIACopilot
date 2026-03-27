@@ -3,3 +3,16 @@ C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACop
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.AssemblyInfo.cs
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.csproj.CoreCompileInputs.cache
 C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.sourcelink.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\MIACopilot.exe
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\MIACopilot.deps.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\MIACopilot.runtimeconfig.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\MIACopilot.pdb
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\refint\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.pdb
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\MIACopilot.genruntimeconfig.cache
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\obj\Debug\net8.0-windows\ref\MIACopilot.dll
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\apprentices.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\companies.json
+C:\repos\GitHub\MIACopilot\MIACopilot\MIACopilot\bin\Debug\net8.0-windows\data\trainers.json
