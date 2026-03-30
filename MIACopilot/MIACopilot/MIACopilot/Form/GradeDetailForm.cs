@@ -81,7 +81,7 @@ public class GradeDetailForm : Form
         // Displays a live preview of grade value and status.
         lblPreview = new Label
         {
-            Text      = "4.0  ✅ Passed",
+            Text      = "4.0  ✔ Passed – Sufficient",
             Font      = new Font("Segoe UI", 11f, FontStyle.Bold),
             ForeColor = Color.FromArgb(41, 128, 185),
             Dock      = DockStyle.Fill,
@@ -129,16 +129,21 @@ public class GradeDetailForm : Form
     private void UpdatePreview()
     {
         double v = (double)nudGrade.Value;
-        string status = v >= 5.0 ? "🌟 Excellent"
-                      : v >= 4.0 ? "✅ Passed"
-                      : v >= 3.0 ? "⚠️ Sufficient"
-                      :            "❌ Failed";
 
-        lblPreview.Text      = $"{nudGrade.Value:0.0}  {status}";
-        lblPreview.ForeColor = v >= 5.0 ? Color.FromArgb(39, 174, 96)
-                             : v >= 4.0 ? Color.FromArgb(41, 128, 185)
-                             : v >= 3.0 ? Color.FromArgb(230, 126, 34)
-                             :            Color.FromArgb(192, 57, 43);
+        string category = v >= 5.6 ? "Excellent"
+                        : v >= 5.0 ? "Great"
+                        : v >= 4.0 ? "Sufficient"
+                        :            "Insufficient";
+
+        string passIcon = v >= 4.0 ? "✔" : "✖";
+        string passText = v >= 4.0 ? "Passed" : "Not passed";
+
+        lblPreview.Text = $"{nudGrade.Value:0.0}  {passIcon} {passText} – {category}";
+
+        lblPreview.ForeColor = v >= 5.6 ? Color.FromArgb(0,   128,   0)   // Excellent   — dark green
+                             : v >= 5.0 ? Color.FromArgb(50,  168,  82)   // Great       — medium green (readable)
+                             : v >= 4.0 ? Color.FromArgb(184, 148,   0)   // Sufficient  — dark yellow (readable)
+                             :            Color.FromArgb(255,   0,   0);  // Insufficient — red
     }
 
     // Copies existing grade data into the form fields.

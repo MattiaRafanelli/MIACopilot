@@ -57,11 +57,13 @@ public class CompanyService
         var existing = GetById(updated.Id);
         if (existing == null) return false;
 
-        existing.Name     = updated.Name;
-        existing.Address  = updated.Address;
-        existing.Phone    = updated.Phone;
-        existing.Email    = updated.Email;
-        existing.Industry = updated.Industry;
+        existing.Name          = updated.Name;
+        existing.Address       = updated.Address;
+        existing.Phone         = updated.Phone;
+        existing.Email         = updated.Email;
+        existing.Industry      = updated.Industry;
+        existing.AdminUsername = updated.AdminUsername;
+        existing.AdminPin      = updated.AdminPin;
 
         _dataService.SaveCompanies(_companies);
         return true;

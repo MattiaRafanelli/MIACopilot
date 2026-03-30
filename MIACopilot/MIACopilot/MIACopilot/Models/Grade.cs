@@ -34,13 +34,19 @@ public class Grade
     public string FormattedValue => Value.ToString("0.0");
 
     /// <summary>
-    /// Returns a textual category based on Swiss grading rules.
+    /// Returns true when the grade is a passing grade (≥ 4.0).
+    /// </summary>
+    public bool IsPassing => Value >= 4.0;
+
+    /// <summary>
+    /// Returns the textual classification based on the Swiss grading scale:
+    /// 5.6–6.0 = Excellent, 5.0–5.5 = Great, 4.0–4.9 = Sufficient, 1.0–3.9 = Insufficient.
     /// </summary>
     public string Category =>
-        Value >= 5.0 ? "Excellent"
-      : Value >= 4.0 ? "Passed"
-      : Value >= 3.0 ? "Sufficient"
-      :               "Failed";
+        Value >= 5.6 ? "Excellent"
+      : Value >= 5.0 ? "Great"
+      : Value >= 4.0 ? "Sufficient"
+      :               "Insufficient";
 
     /// <summary>
     /// Returns a readable string representation of the grade.

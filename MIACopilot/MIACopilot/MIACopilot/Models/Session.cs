@@ -6,9 +6,10 @@ namespace MIACopilot.Models;
 /// </summary>
 public enum UserRole
 {
-    SuperAdmin,   // Full system access (administration)
-    Trainer,      // Vocational trainer access
-    Apprentice    // Apprentice (learner) access
+    SuperAdmin,    // Full system access (administration)
+    Trainer,       // Vocational trainer access (read-only)
+    Apprentice,    // Apprentice (learner) access
+    CompanyAdmin   // Company-scoped admin with CRUD for own company
 }
 
 /// <summary>
@@ -23,6 +24,9 @@ public static class Session
     // ID of the logged-in user (ApprenticeId or TrainerId)
     public static int UserId { get; set; }
 
+    // For CompanyAdmin: the company they administer
+    public static int CompanyId { get; set; }
+
     // Username used for login
     public static string Username { get; set; } = "";
 
@@ -35,9 +39,10 @@ public static class Session
     /// </summary>
     public static void Clear()
     {
-        Role     = UserRole.SuperAdmin;
-        UserId   = 0;
-        Username = "";
-        FullName = "";
+        Role      = UserRole.SuperAdmin;
+        UserId    = 0;
+        CompanyId = 0;
+        Username  = "";
+        FullName  = "";
     }
 }

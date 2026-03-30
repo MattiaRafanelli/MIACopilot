@@ -4,10 +4,11 @@ using System.Drawing.Drawing2D;
 
 namespace MIACopilot.Forms;
 
+
 /// <summary>
-/// Grade tool — modern split layout: grade list left, stats + bar chart right.
+/// Grade tool – modern split layout: grade list left, details right.
 /// </summary>
-public class GradeForm : Form
+public partial class GradeForm : Form
 {
     private readonly ApprenticeService _apprenticeService;
     private readonly GradeService      _gradeService;
@@ -263,14 +264,12 @@ public class GradeForm : Form
     // Refreshes the subject filter list based on the current apprentice and resets selection to "All subjects".
     void RefreshFilter()
     {
-        cmbFilter.SelectedIndexChanged -= (_, _) => LoadGrades();
         cmbFilter.Items.Clear();
         cmbFilter.Items.Add("All subjects");
         if (_current != null)
             foreach (var s in _gradeService.GetSubjects(_current.Id))
                 cmbFilter.Items.Add(s);
-        cmbFilter.SelectedIndex         = 0;
-        cmbFilter.SelectedIndexChanged += (_, _) => LoadGrades();
+        cmbFilter.SelectedIndex = 0;
     }
 
     // Loads grades (optionally filtered by subject), binds them to the grid, updates stats, and redraws the chart.
@@ -398,16 +397,28 @@ public class GradeForm : Form
     // ═══════════════════════ HELPERS ═════════════════════════════════════════
 
     // Formats the "Grade" cells by parsing the value and applying a color + bold font.
-void ColourGrades(object? sender, DataGridViewCellFormattingEventArgs e)
-{
-    if (dgvGrades.Columns[e.ColumnIndex].Name != "Grade") return;
-    if (e.Value is not string s) return;
-    if (!double.TryParse(s, System.Globalization.NumberStyles.Any,
-            System.Globalization.CultureInfo.InvariantCulture, out double v)) return;
+    void ColourGrades(object? sender, DataGridViewCellFormattingEventArgs e)
+    {
+        if (e.ColumnIndex < 0 || e.RowIndex < 0) return;
 
-    e.CellStyle.ForeColor = GradeColor(v);
-    e.CellStyle.Font      = new Font("Segoe UI", 9.5f, FontStyle.Bold);
-}
+        var col = dgvGrades.Columns[e.ColumnIndex];
+        if (col == null) return;
+        if (col.Name != "Grade") return;
+
+        if (e.Value is null) return;
+
+        if (!double.TryParse(
+                e.Value.ToString(),
+                System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out double v))
+            return;
+
+        if (e.CellStyle is null) return;
+
+        e.CellStyle.ForeColor = GradeColor(v);
+        e.CellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
+    }
 
 // Maps a numeric grade value to a color (green/blue/orange/red).
 static Color GradeColor(double v) =>
@@ -428,18 +439,165 @@ static void Info(string msg) =>
     MessageBox.Show(msg, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 // Creates a styled toolbar button with the given text and background color.
-static Button Btn(string text, Color color) => new()
+private static Button Btn(string text, Color color)
 {
-    Text      = text,
-    BackColor = color,
-    ForeColor = Color.White,
-    FlatStyle = FlatStyle.Flat,
-    Height    = 34,
-    Width     = 124,
-    Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
-    Cursor    = Cursors.Hand,
-    FlatAppearance = { BorderSize = 0 }
-};
+    var btn = new Button
+    {
+        Text      = text,
+        BackColor = color,
+        ForeColor = Color.White,
+        FlatStyle = FlatStyle.Flat,
+        Height    = 34,
+        Width     = 124,
+        Font      = new Font("Segoe UI", 9f, FontStyle.Bold),
+        Cursor    = Cursors.Hand
+    };
+    btn.FlatAppearance.BorderSize = 0;
+    return btn;
+}
+
+/// <summary>
+/// Opens a dialog to create a new grade for the currently selected apprentice.
+/// </summary>
+private void AddGrade()
+{
+    if (_current == null) { Info("Select an apprentice first."); return; }
+
+    var grade = new Grade { ApprenticeId = _current.Id, Date = DateTime.Today };
+    if (ShowGradeDialog("Add Grade", grade))
+    {
+        _gradeService.Create(grade);
+        RefreshFilter();
+        LoadGrades();
+    }
+}
+
+/// <summary>
+/// Opens a dialog pre-filled with the selected grade's data so the user can edit it.
+/// </summary>
+private void EditGrade()
+{
+    var id = GetId();
+    if (id < 0) return;
+
+    var grade = _gradeService.GetById(id);
+    if (grade == null) return;
+
+    if (ShowGradeDialog("Edit Grade", grade))
+    {
+        _gradeService.Update(grade);
+        RefreshFilter();
+        LoadGrades();
+    }
+}
+
+/// <summary>
+/// Deletes the currently selected grade after asking for confirmation.
+/// </summary>
+private void DeleteGrade()
+{
+    var id = GetId();
+    if (id < 0) return;
+
+    if (MessageBox.Show("Delete this grade?", "Confirm",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+        return;
+
+    _gradeService.Delete(id);
+    RefreshFilter();
+    LoadGrades();
+}
+
+/// <summary>
+/// Shows a simple inline dialog for entering or editing grade fields.
+/// Mutates the passed grade object on confirmation.
+/// Returns true if the user confirmed and all input was valid.
+/// </summary>
+private bool ShowGradeDialog(string title, Grade grade)
+{
+    using var dlg = new Form
+    {
+        Text            = title,
+        Size            = new Size(360, 320),
+        StartPosition   = FormStartPosition.CenterParent,
+        FormBorderStyle = FormBorderStyle.FixedDialog,
+        MaximizeBox     = false,
+        MinimizeBox     = false,
+        Font            = new Font("Segoe UI", 9.5f)
+    };
+
+    var table = new TableLayoutPanel
+    {
+        Dock        = DockStyle.Fill,
+        ColumnCount = 2,
+        RowCount    = 5,
+        Padding     = new Padding(12)
+    };
+    table.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
+    table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+    for (int r = 0; r < 5; r++)
+        table.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
+
+    var txtSubject = new TextBox { Text = grade.Subject,                                                                          Dock = DockStyle.Fill };
+    var txtValue   = new TextBox { Text = grade.Value > 0 ? grade.Value.ToString("0.0") : "",                                     Dock = DockStyle.Fill };
+    var txtType    = new TextBox { Text = grade.Type,                                                                             Dock = DockStyle.Fill };
+    var txtDate    = new TextBox { Text = grade.Date == default ? DateTime.Today.ToString("dd.MM.yyyy") : grade.Date.ToString("dd.MM.yyyy"), Dock = DockStyle.Fill };
+    var txtNotes   = new TextBox { Text = grade.Notes,                                                                            Dock = DockStyle.Fill };
+
+    table.Controls.Add(new Label { Text = "Subject:", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 0);
+    table.Controls.Add(txtSubject, 1, 0);
+    table.Controls.Add(new Label { Text = "Value:",   TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 1);
+    table.Controls.Add(txtValue,   1, 1);
+    table.Controls.Add(new Label { Text = "Type:",    TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 2);
+    table.Controls.Add(txtType,    1, 2);
+    table.Controls.Add(new Label { Text = "Date:",    TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 3);
+    table.Controls.Add(txtDate,    1, 3);
+    table.Controls.Add(new Label { Text = "Notes:",   TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 4);
+    table.Controls.Add(txtNotes,   1, 4);
+
+    var btnOk     = new Button { Text = "OK",     DialogResult = DialogResult.OK,     Width = 80 };
+    var btnCancel = new Button { Text = "Cancel",  DialogResult = DialogResult.Cancel, Width = 80 };
+    var btnPanel  = new FlowLayoutPanel
+    {
+        Dock          = DockStyle.Bottom,
+        Height        = 44,
+        FlowDirection = FlowDirection.RightToLeft,
+        Padding       = new Padding(8)
+    };
+    btnPanel.Controls.Add(btnCancel);
+    btnPanel.Controls.Add(btnOk);
+
+    dlg.Controls.Add(table);
+    dlg.Controls.Add(btnPanel);
+    dlg.AcceptButton = btnOk;
+    dlg.CancelButton = btnCancel;
+
+    if (dlg.ShowDialog(this) != DialogResult.OK) return false;
+
+    if (string.IsNullOrWhiteSpace(txtSubject.Text)) { Info("Subject is required."); return false; }
+
+    if (!double.TryParse(txtValue.Text.Replace(',', '.'),
+            System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out double val)
+        || val < 1.0 || val > 6.0)
+    {
+        Info("Value must be a number between 1.0 and 6.0.");
+        return false;
+    }
+
+    if (!DateTime.TryParse(txtDate.Text, out var date))
+    {
+        Info("Date is invalid. Use dd.MM.yyyy.");
+        return false;
+    }
+
+    grade.Subject = txtSubject.Text.Trim();
+    grade.Value   = val;
+    grade.Type    = txtType.Text.Trim();
+    grade.Date    = date;
+    grade.Notes   = txtNotes.Text.Trim();
+    return true;
+}
 
 // Creates a consistently styled read-only DataGridView for displaying grades.
 static DataGridView MakeGrid()

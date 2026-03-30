@@ -27,8 +27,10 @@ public class ApprenticePortal : Form
 
     private DataGridView dgvJournals = new();
     private DataGridView dgvGrades   = new();
-    private Label        lblAvg      = new();
-    private Label        lblStatus   = new();
+    private Label    lblAvg           = new();
+    private Label    lblStatus        = new();
+    private ComboBox cmbStatusFilter  = new();
+    private ComboBox cmbSortOrder     = new();
 
     static readonly Color C_Sidebar = Color.FromArgb(15, 23, 41);
     static readonly Color C_SideHov = Color.FromArgb(30, 41, 59);
@@ -86,17 +88,18 @@ public class ApprenticePortal : Form
             using var avBrush = new SolidBrush(C_Blue);
             g.FillEllipse(avBrush, 20, 20, 58, 58);
             using var initFont = new Font("Segoe UI", 20f, FontStyle.Bold);
-            var init = $"{_me.FirstName[0]}{_me.LastName[0]}".ToUpper();
+            var init = $"{(_me.FirstName.Length > 0 ? _me.FirstName[0] : '?')}{(_me.LastName.Length > 0 ? _me.LastName[0] : '?')}".ToUpper();
             var sz   = g.MeasureString(init, initFont);
             g.DrawString(init, initFont, Brushes.White, 20 + (58 - sz.Width) / 2, 20 + (58 - sz.Height) / 2);
 
-            // Name and role
-            using var nameFont = new Font("Segoe UI", 10.5f, FontStyle.Bold);
-            using var subFont  = new Font("Segoe UI", 8.5f);
+            // Name and role — clipped with ellipsis for long names
+            using var nameFont  = new Font("Segoe UI", 10.5f, FontStyle.Bold);
+            using var subFont   = new Font("Segoe UI", 8.5f);
             using var muteBrush = new SolidBrush(C_Muted);
-            g.DrawString(_me.FullName, nameFont, Brushes.White, 88, 28);
+            using var sf        = new StringFormat { Trimming = StringTrimming.EllipsisCharacter };
+            g.DrawString(_me.FullName, nameFont, Brushes.White, new RectangleF(88, 28, 132, 22), sf);
             g.DrawString("Apprentice", subFont, muteBrush, 88, 52);
-            g.DrawString($"@{_me.Username}", subFont, muteBrush, 88, 70);
+            g.DrawString($"@{_me.Username}", subFont, muteBrush, new RectangleF(88, 70, 132, 18), sf);
         };
 
         var sep = new Panel { Dock = DockStyle.Top, Height = 1, BackColor = Color.FromArgb(30, 41, 59) };
@@ -319,6 +322,10 @@ void BuildProfilePanel()
         btnEdit, btnSave, btnCancelEdit, btnChangePin
     });
 
+    // Thick bottom accent bar — consistent across all three pages
+    var bottomBarProfile = new Panel { Dock = DockStyle.Bottom, Height = 6, BackColor = C_Blue };
+
+    pnlProfile.Controls.Add(bottomBarProfile);
     pnlProfile.Controls.Add(card);
     pnlProfile.Controls.Add(banner);
     pnlProfile.Controls.Add(title);
@@ -376,6 +383,10 @@ void BuildJournalsPanel()
     card.Controls.Add(dgvJournals);
     card.Controls.Add(toolbar);
 
+    // Thick bottom accent bar — consistent across all three pages
+    var bottomBarJournals = new Panel { Dock = DockStyle.Bottom, Height = 6, BackColor = C_Blue };
+
+    pnlJournals.Controls.Add(bottomBarJournals);
     pnlJournals.Controls.Add(card);
     pnlJournals.Controls.Add(title);
 }
@@ -462,7 +473,8 @@ void BuildGradesPanel()
     toolbar.Controls.Add(btnEdit);
     toolbar.Controls.Add(btnDelete);
 
-    // ── Summary bar ───────────────────────────────────────────────────────
+    // ── Summary + filter bar ────────────────────────────────────────────────
+    // Aligned to the same left edge as the Add/Edit/Delete toolbar above.
     var statsBar = new Panel { Dock = DockStyle.Top, Height = 72, BackColor = C_White };
     statsBar.Paint += (_, e) =>
     {
@@ -470,31 +482,62 @@ void BuildGradesPanel()
         e.Graphics.DrawLine(pen, 0, statsBar.Height - 1, statsBar.Width, statsBar.Height - 1);
     };
 
+    // Average indicator — x=10 matches toolbar button left edge
     lblAvg = new Label
     {
         Text      = "—",
         Font      = new Font("Segoe UI", 30f, FontStyle.Bold),
         ForeColor = C_Blue,
-        Location  = new Point(24, 12),
+        Location  = new Point(10, 12),
         Size      = new Size(110, 48),
         TextAlign = ContentAlignment.MiddleCenter,
         BackColor = C_White
     };
+
+    // Status label — immediately right of the indicator
     lblStatus = new Label
     {
         Text      = "No grades yet",
         Font      = new Font("Segoe UI", 11f),
         ForeColor = C_Muted,
-        Location  = new Point(142, 24),
-        Size      = new Size(300, 30),
+        Location  = new Point(128, 24),
+        Size      = new Size(220, 30),
         BackColor = C_White
     };
 
+    // Status filter dropdown
+    cmbStatusFilter = new ComboBox
+    {
+        DropDownStyle = ComboBoxStyle.DropDownList,
+        Location      = new Point(362, 22),
+        Size          = new Size(150, 28),
+        Font          = new Font("Segoe UI", 9.5f),
+        BackColor     = C_White
+    };
+    cmbStatusFilter.Items.AddRange(new object[] { "All grades", "Only passed", "Only failed", "Insufficient", "Sufficient", "Great", "Excellent" });
+    cmbStatusFilter.SelectedIndex = 0;
+    cmbStatusFilter.SelectedIndexChanged += (_, _) => LoadGrades();
+
+    // Sort dropdown
+    cmbSortOrder = new ComboBox
+    {
+        DropDownStyle = ComboBoxStyle.DropDownList,
+        Location      = new Point(522, 22),
+        Size          = new Size(150, 28),
+        Font          = new Font("Segoe UI", 9.5f),
+        BackColor     = C_White
+    };
+    cmbSortOrder.Items.AddRange(new object[] { "Newest first", "Oldest first", "Highest grade", "Lowest grade" });
+    cmbSortOrder.SelectedIndex = 0;
+    cmbSortOrder.SelectedIndexChanged += (_, _) => LoadGrades();
+
+    statsBar.Controls.Add(cmbSortOrder);
+    statsBar.Controls.Add(cmbStatusFilter);
     statsBar.Controls.Add(lblStatus);
     statsBar.Controls.Add(lblAvg);
 
     dgvGrades = MakeGrid();
-    dgvGrades.CellFormatting += ColourGrades;
+    dgvGrades.CellFormatting += ColourGradeCell;
     LoadGrades();
 
     var card = CardPanel();
@@ -502,6 +545,10 @@ void BuildGradesPanel()
     card.Controls.Add(statsBar);
     card.Controls.Add(toolbar); // last-added Top → appears above statsBar
 
+    // Thick bottom accent bar — consistent across all three pages
+    var bottomBarGrades = new Panel { Dock = DockStyle.Bottom, Height = 6, BackColor = C_Blue };
+
+    pnlGrades.Controls.Add(bottomBarGrades);
     pnlGrades.Controls.Add(card);
     pnlGrades.Controls.Add(title);
 }
@@ -535,13 +582,33 @@ void DeleteGrade()
     { _gradeService.Delete(id); LoadGrades(); }
 }
 
-// Reloads grades for the apprentice, binds them to the grid, and updates the average + status labels.
+// Reloads grades for the apprentice, applies Status/Sort filter dropdowns, and updates the average + status labels.
 void LoadGrades()
 {
     var grades = _gradeService.GetByApprentice(_me.Id);
 
+    // Apply status filter
+    grades = cmbStatusFilter.SelectedIndex switch
+    {
+        1 => grades.Where(g => g.Value >= 4.0).ToList(),                              // Only passed
+        2 => grades.Where(g => g.Value < 4.0).ToList(),                               // Only failed
+        3 => grades.Where(g => g.Value < 4.0).ToList(),                               // Insufficient
+        4 => grades.Where(g => g.Value >= 4.0 && g.Value < 5.0).ToList(),             // Sufficient
+        5 => grades.Where(g => g.Value >= 5.0 && g.Value < 5.6).ToList(),             // Great
+        6 => grades.Where(g => g.Value >= 5.6).ToList(),                              // Excellent
+        _ => grades
+    };
+
+    // Apply sort order
+    grades = cmbSortOrder.SelectedIndex switch
+    {
+        1 => grades.OrderBy(g => g.Date).ToList(),
+        2 => grades.OrderByDescending(g => g.Value).ToList(),
+        3 => grades.OrderBy(g => g.Value).ToList(),
+        _ => grades.OrderByDescending(g => g.Date).ToList()
+    };
+
     dgvGrades.DataSource = grades
-        .OrderByDescending(g => g.Date)
         .Select(g => new
         {
             g.Id,
@@ -560,7 +627,7 @@ void LoadGrades()
 
     lblAvg.Text         = $"Ø {avg:0.0}";
     lblAvg.ForeColor    = GradeColor(avg);
-    lblStatus.Text      = avg >= 5.0 ? "🌟  Excellent" : avg >= 4.0 ? "✅  Passed" : avg >= 3.0 ? "⚠️  Sufficient" : "❌  Failed";
+    lblStatus.Text      = avg >= 5.6 ? "Excellent" : avg >= 5.0 ? "Great" : avg >= 4.0 ? "Sufficient" : "Insufficient";
     lblStatus.ForeColor = GradeColor(avg);
 }
 
@@ -603,10 +670,11 @@ static Button ActionBtn(string text, Color color) => new()
 };
 
 // Builds the page title header panel (main title + subtitle labels).
+// Reduced height and tighter label positions move the heading block upward.
 static Panel PageTitle(string t, string sub)
 {
-    var p = new Panel { Dock = DockStyle.Top, Height = 68, BackColor = C_Bg };
-    p.Controls.Add(new Label { Text = sub, Font = new Font("Segoe UI", 9.5f),                ForeColor = Color.FromArgb(100, 116, 139), BackColor = C_Bg, Location = new Point(2, 40), AutoSize = true });
+    var p = new Panel { Dock = DockStyle.Top, Height = 72, BackColor = C_Bg };
+    p.Controls.Add(new Label { Text = sub, Font = new Font("Segoe UI", 9.5f),                ForeColor = Color.FromArgb(100, 116, 139), BackColor = C_Bg, Location = new Point(2, 42), AutoSize = true });
     p.Controls.Add(new Label { Text = t,   Font = new Font("Segoe UI", 18f, FontStyle.Bold), ForeColor = Color.FromArgb(15, 23, 42),   BackColor = C_Bg, Location = new Point(0, 4),  AutoSize = true });
     return p;
 }
@@ -666,22 +734,40 @@ static DataGridView MakeGrid()
 }
 
 // Formats the "Grade" cells by parsing the value and applying color + bold font based on the grade.
-void ColourGrades(object? sender, DataGridViewCellFormattingEventArgs e)
+void ColourGradeCell(object? sender, DataGridViewCellFormattingEventArgs e)
 {
-    if (dgvGrades.Columns[e.ColumnIndex].Name != "Grade") return;
-    if (e.Value is not string s) return;
-    if (!double.TryParse(s, System.Globalization.NumberStyles.Any,
-            System.Globalization.CultureInfo.InvariantCulture, out double v)) return;
-    e.CellStyle.ForeColor = GradeColor(v);
-    e.CellStyle.Font      = new Font("Segoe UI", 10f, FontStyle.Bold);
+    if (e.ColumnIndex < 0 || e.RowIndex < 0) return;
+
+    var col = dgvGrades.Columns[e.ColumnIndex];
+    if (col == null) return;
+    if (col.Name != "Grade") return;
+
+    if (e.Value is null) return;
+
+    if (!double.TryParse(
+            e.Value.ToString(),
+            System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out double v))
+        return;
+
+    if (e.CellStyle is null) return;
+
+    e.CellStyle.ForeColor =
+        v >= 5.0 ? C_Green :
+        v >= 4.0 ? C_Blue  :
+        v >= 3.0 ? C_Orange :
+                   C_Red;
+
+    e.CellStyle.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
 }
 
-// Maps a numeric grade to a status color (green/blue/orange/red).
+// Maps a numeric grade to a status color using the 4-tier Swiss scale.
 static Color GradeColor(double v) =>
-    v >= 5.0 ? Color.FromArgb(16, 185, 129)
-  : v >= 4.0 ? Color.FromArgb(59, 130, 246)
-  : v >= 3.0 ? Color.FromArgb(245, 158, 11)
-  :            Color.FromArgb(239, 68, 68);
+    v >= 5.6 ? Color.FromArgb(0,   128,   0)  // Excellent   — dark green  #008000
+  : v >= 5.0 ? Color.FromArgb(144, 238, 144)  // Great       — light green #90EE90
+  : v >= 4.0 ? Color.FromArgb(255, 215,   0)  // Sufficient  — yellow      #FFD700
+  :            Color.FromArgb(255,   0,   0); // Insufficient — red         #FF0000
 
 // Creates a styled value label used in the profile card at a given Y position.
 static Label ProfileVal(string text, int y) => new()
@@ -697,3 +783,4 @@ static Label ProfileVal(string text, int y) => new()
 // Shows a simple informational message box.
 static void Info(string msg) =>
     MessageBox.Show(msg, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+}

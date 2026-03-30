@@ -65,6 +65,7 @@ public class ApprenticeService
         existing.CompanyId           = updated.CompanyId;
         existing.VocationalTrainerId = updated.VocationalTrainerId;
         existing.Username            = updated.Username;
+        existing.Pin                 = updated.Pin;
 
         _dataService.SaveApprentices(_apprentices);
         return true;

@@ -1,50 +1,302 @@
 [
-  {
-    "Id": 1,
-    "Name": "Isolutions AG",
-    "Address": "Schanzenstrasse 4c, 3008 Bern",
-    "Phone": "\u002B41 31 560 88 88",
-    "Email": "info@isolutions.com",
-    "Industry": "Information Technologies"
-  },
-  {
-    "Id": 2,
-    "Name": "ABB Schweiz AG",
-    "Address": "Brown Boveri Strasse 6, 5400 Baden",
-    "Phone": "\u002B41 58 585 00 00",
-    "Email": "contact@ch.abb.com",
-    "Industry": "Electrical Engineering"
-  },
-  {
-    "Id": 3,
-    "Name": "Migros Genossenschaft",
-    "Address": "Limmatstrasse 152, 8005 Z\u00FCrich",
-    "Phone": "\u002B41 44 277 21 11",
-    "Email": "info@migros.ch",
-    "Industry": "Retail"
-  },
-  {
-    "Id": 4,
-    "Name": "UBS Group AG",
-    "Address": "Bahnhofstrasse 45, 8001 Z\u00FCrich",
-    "Phone": "\u002B41 44 234 11 11",
-    "Email": "info@ubs.com",
-    "Industry": "Banking \u0026 Finance"
-  },
-  {
-    "Id": 5,
-    "Name": "Roche Diagnostics AG",
-    "Address": "Forrenstrasse 2, 6343 Rotkreuz",
-    "Phone": "\u002B41 41 799 61 11",
-    "Email": "info@roche.com",
-    "Industry": "Pharmaceuticals"
-  },
-  {
-    "Id": 6,
-    "Name": "Swisscom",
-    "Address": "Genfergasse 14, 3011 Bern",
-    "Phone": "\u002B41 79 284 09 28",
-    "Email": "info@swisscom.ch",
-    "Industry": "Information Technologies"
-  }
-]
+    {
+      "Id": 1,
+      "Name": "Isolutions AG",
+      "Address": "Schanzenstrasse 4c, 3008 Bern",
+      "Phone": "+41 31 560 88 88",
+      "Email": "info@isolutions.ch",
+      "Industry": "Information Technologies",
+      "AdminUsername": "AdminIsolutionsAG",
+      "AdminPin": "1357"
+    },
+    {
+      "Id": 2,
+      "Name": "ABB Schweiz AG",
+      "Address": "Brown Boveri Strasse 6, 5400 Baden",
+      "Phone": "+41 58 585 00 00",
+      "Email": "contact@ch.abb.com",
+      "Industry": "Electrical Engineering",
+      "AdminUsername": "AdminABBSchweizAG",
+      "AdminPin": "2486"
+    },
+    {
+      "Id": 3,
+      "Name": "Migros Genossenschaft",
+      "Address": "Limmatstrasse 152, 8005 Zürich",
+      "Phone": "+41 44 277 21 11",
+      "Email": "info@migros.ch",
+      "Industry": "Retail",
+      "AdminUsername": "AdminMigrosGenossenschaft",
+      "AdminPin": "1592"
+    },
+    {
+      "Id": 4,
+      "Name": "UBS Group AG",
+      "Address": "Bahnhofstrasse 45, 8001 Zürich",
+      "Phone": "+41 44 234 11 11",
+      "Email": "info@ubs.com",
+      "Industry": "Banking & Finance",
+      "AdminUsername": "AdminUBSGroupAG",
+      "AdminPin": "2648"
+    },
+    {
+      "Id": 5,
+      "Name": "Roche Diagnostics AG",
+      "Address": "Forrenstrasse 2, 6343 Rotkreuz",
+      "Phone": "+41 41 799 61 11",
+      "Email": "info@roche.com",
+      "Industry": "Pharmaceuticals",
+      "AdminUsername": "AdminRocheDiagnosticsAG",
+      "AdminPin": "3159"
+    },
+    {
+      "Id": 6,
+      "Name": "Swisscom",
+      "Address": "Genfergasse 14, 3011 Bern",
+      "Phone": "+41 79 284 09 28",
+      "Email": "info@swisscom.ch",
+      "Industry": "Information Technologies",
+      "AdminUsername": "AdminSwisscom",
+      "AdminPin": "4820"
+    },
+    {
+      "Id": 7,
+      "Name": "Raiffaisen Bank",
+      "Address": "Vadianstrasse 17, 9001 St. Gallen",
+      "Phone": "+41 71 226 60 00",
+      "Email": "info@raiffaisen.ch",
+      "Industry": "Banking & Finance",
+      "AdminUsername": "AdminRaiffaisen",
+      "AdminPin": "1000"
+    },
+    {
+      "Id": 8,
+      "Name": "Siemens Schweiz AG",
+      "Address": "Zürichstrasse 9, 6340 Baar",
+      "Phone": "+41 41 955 25 25",
+      "Email": "info@siemens.ch",
+      "Industry": "Electrical Engineering",
+      "AdminUsername": "AdminSiemensSchweiz",
+      "AdminPin": "5555"
+    },
+    {
+      "Id": 9,
+      "Name": "Nestlé Schweiz",
+      "Address": "Avenue Nestlé 55, 1800 Vevey",
+      "Phone": "+41 21 924 11 11",
+      "Email": "info@nestle.ch",
+      "Industry": "Food & Beverages",
+      "AdminUsername": "AdminNestleSchweiz",
+      "AdminPin": "6666"
+    },
+    {
+      "Id": 10,
+      "Name": "Accenture Switzerland",
+      "Address": "Bäumleins Strasse 20, 8003 Zürich",
+      "Phone": "+41 44 334 11 11",
+      "Email": "info@accenture.ch",
+      "Industry": "IT Consulting",
+      "AdminUsername": "AdminAccentureSwiss",
+      "AdminPin": "7777"
+    },
+    {
+      "Id": 11,
+      "Name": "SBB Swiss Federal Railways",
+      "Address": "Hochschulstrasse 6, 3015 Bern",
+      "Phone": "+41 51 220 11 11",
+      "Email": "info@sbb.ch",
+      "Industry": "Transportation",
+      "AdminUsername": "AdminSBB",
+      "AdminPin": "8888"
+    },
+    {
+      "Id": 12,
+      "Name": "Zurich Insurance",
+      "Address": "Mythenquai 2, 8002 Zürich",
+      "Phone": "+41 44 625 25 25",
+      "Email": "info@zurich.ch",
+      "Industry": "Insurance",
+      "AdminUsername": "AdminZurichInsurance",
+      "AdminPin": "9999"
+    },
+    {
+      "Id": 13,
+      "Name": "Holcim Schweiz",
+      "Address": "Hagenholzstrasse 111, 8050 Zürich",
+      "Phone": "+41 58 858 84 40",
+      "Email": "info@holcim.ch",
+      "Industry": "Construction Materials",
+      "AdminUsername": "AdminHolcim",
+      "AdminPin": "1001"
+    },
+    {
+      "Id": 14,
+      "Name": "Swatch Group",
+      "Address": "Rue de la Montat 8, 2301 La Chaux-de-Fonds",
+      "Phone": "+41 32 923 68 68",
+      "Email": "info@swatch.ch",
+      "Industry": "Watchmaking",
+      "AdminUsername": "AdminSwatch",
+      "AdminPin": "1002"
+    },
+    {
+      "Id": 15,
+      "Name": "Arova Energie AG",
+      "Address": "Landenbergstrasse 25, 4056 Basel",
+      "Phone": "+41 61 205 85 00",
+      "Email": "info@arova.ch",
+      "Industry": "Energy",
+      "AdminUsername": "AdminArova",
+      "AdminPin": "1003"
+    },
+    {
+      "Id": 16,
+      "Name": "Adidas Performance",
+      "Address": "Rue Georges-Appenzeller 8, 1700 Fribourg",
+      "Phone": "+41 26 402 00 00",
+      "Email": "info@adidas.ch",
+      "Industry": "Sports & Apparel",
+      "AdminUsername": "AdminAdidas",
+      "AdminPin": "1004"
+    },
+    {
+      "Id": 17,
+      "Name": "Georg Fischer AG",
+      "Address": "Aarburg, 4663 Aarburg",
+      "Phone": "+41 62 824 11 11",
+      "Email": "info@georgfischer.ch",
+      "Industry": "Industrial Manufacturing",
+      "AdminUsername": "AdminGeorgFischer",
+      "AdminPin": "1005"
+    },
+    {
+      "Id": 18,
+      "Name": "Berchtold AG",
+      "Address": "Wilnsdorferstrasse 41, 6900 Lugano",
+      "Phone": "+41 91 910 91 11",
+      "Email": "info@berchtold.ch",
+      "Industry": "Medical Technology",
+      "AdminUsername": "AdminBerchtold",
+      "AdminPin": "1006"
+    },
+    {
+      "Id": 19,
+      "Name": "Bühler Group",
+      "Address": "Gupfenstrasse 15, 9240 Uzwil",
+      "Phone": "+41 71 955 11 11",
+      "Email": "info@buhler.ch",
+      "Industry": "Food & Industrial Technology",
+      "AdminUsername": "AdminBuhler",
+      "AdminPin": "1007"
+    },
+    {
+      "Id": 20,
+      "Name": "Clariant International Ltd",
+      "Address": "Rothausstrasse 61, 4132 Muttenz",
+      "Phone": "+41 61 469 11 11",
+      "Email": "info@clariant.ch",
+      "Industry": "Chemicals",
+      "AdminUsername": "AdminClariant",
+      "AdminPin": "1008"
+    },
+    {
+      "Id": 21,
+      "Name": "Emmi AG",
+      "Address": "Milchplatz 1, 6260 Reiden",
+      "Phone": "+41 62 586 86 86",
+      "Email": "info@emmi.ch",
+      "Industry": "Dairy",
+      "AdminUsername": "AdminEmmi",
+      "AdminPin": "1009"
+    },
+    {
+      "Id": 22,
+      "Name": "Fenix Parts AG",
+      "Address": "Industrie Nord, 6247 Edisikon",
+      "Phone": "+41 41 757 23 23",
+      "Email": "info@fenix.ch",
+      "Industry": "Industrial Parts",
+      "AdminUsername": "AdminFenix",
+      "AdminPin": "1010"
+    },
+    {
+      "Id": 23,
+      "Name": "Givaudan SA",
+      "Address": "Chemin de la Parfumerie 5, 1200 Genève",
+      "Phone": "+41 22 780 91 11",
+      "Email": "info@givaudan.ch",
+      "Industry": "Fragrances & Flavours",
+      "AdminUsername": "AdminGivaudan",
+      "AdminPin": "1011"
+    },
+    {
+      "Id": 24,
+      "Name": "Hilti AG",
+      "Address": "Feldkircherstrasse 100, 6800 Feldkirch",
+      "Phone": "+43 5522 790 0",
+      "Email": "info@hilti.ch",
+      "Industry": "Construction Tools",
+      "AdminUsername": "AdminHilti",
+      "AdminPin": "1012"
+    },
+    {
+      "Id": 25,
+      "Name": "Syngenta AG",
+      "Address": "Schwarzwaldallee 215, 4002 Basel",
+      "Phone": "+41 61 323 11 11",
+      "Email": "info@syngenta.ch",
+      "Industry": "Agrochemicals",
+      "AdminUsername": "AdminSyngenta",
+      "AdminPin": "1013"
+    },
+    {
+      "Id": 26,
+      "Name": "Valora Group",
+      "Address": "Hofackerstrasse 50, 4132 Muttenz",
+      "Phone": "+41 61 467 11 11",
+      "Email": "info@valora.ch",
+      "Industry": "Retail & Services",
+      "AdminUsername": "AdminValora",
+      "AdminPin": "1014"
+    },
+    {
+      "Id": 27,
+      "Name": "Vinci Construction",
+      "Address": "Almelistrasse 4, 6900 Lugano",
+      "Phone": "+41 91 910 91 91",
+      "Email": "info@vinci.ch",
+      "Industry": "Construction",
+      "AdminUsername": "AdminVinci",
+      "AdminPin": "1015"
+    },
+    {
+      "Id": 28,
+      "Name": "Wesco International",
+      "Address": "Rue de l'Industrie 1, 1950 Sion",
+      "Phone": "+41 27 606 11 11",
+      "Email": "info@wesco.ch",
+      "Industry": "Electrical Distribution",
+      "AdminUsername": "AdminWesco",
+      "AdminPin": "1016"
+    },
+    {
+      "Id": 29,
+      "Name": "Ziehl-Abegg AG",
+      "Address": "Industriestrasse 12, 8307 Effretikon",
+      "Phone": "+41 52 354 77 77",
+      "Email": "info@ziehl.ch",
+      "Industry": "Engineering",
+      "AdminUsername": "AdminZiehlAbegg",
+      "AdminPin": "1017"
+    },
+    {
+      "Id": 30,
+      "Name": "Landis+Gyr AG",
+      "Address": "Theilerstrasse 1, 6301 Zug",
+      "Phone": "+41 41 935 60 60",
+      "Email": "info@landis.ch",
+      "Industry": "Smart Metering",
+      "AdminUsername": "AdminLandisGyr",
+      "AdminPin": "1018"
+    }
+  ]

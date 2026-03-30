@@ -384,7 +384,7 @@ public class MainForm : Form
 
         AutoSizeCols(dgvRecent, "Trainer");
     }
-}
+
 
     // ═══════════════════════ APPRENTICES (read-only) ══════════════════════════
 
@@ -484,10 +484,10 @@ void BuildCompanyPanel()
     var btnEdit   = CrudBtn("✏️  Edit",        C_Blue);
     var btnDelete = CrudBtn("🗑  Delete",      C_Red);
 
-    // Manual positioning inside toolbar
+    // Manual positioning — Delete is intentionally spaced far from Edit to prevent mis-clicks
     btnAdd.Location    = new Point(12, 10);
     btnEdit.Location   = new Point(170, 10);
-    btnDelete.Location = new Point(286, 10);
+    btnDelete.Location = new Point(328, 10);
 
     // Wire actions
     btnAdd.Click    += (_, _) => AddCompany();
@@ -516,7 +516,7 @@ void BuildCompanyPanel()
 /// </summary>
 void AddCompany()
 {
-    using var f = new CompanyDetailForm(null);
+    using var f = new CompanyDetailForm(null, _companyService.GetAll());
     if (f.ShowDialog() == DialogResult.OK)
     {
         _companyService.Create(f.Result!);
@@ -543,7 +543,7 @@ void EditCompany()
     if (co == null) return;
 
     // Edit dialog
-    using var f = new CompanyDetailForm(co);
+    using var f = new CompanyDetailForm(co, _companyService.GetAll());
     if (f.ShowDialog() == DialogResult.OK)
     {
         _companyService.Update(f.Result!);
@@ -782,6 +782,8 @@ void ColourGradeCell(object? sender, DataGridViewCellFormattingEventArgs e)
             System.Globalization.CultureInfo.InvariantCulture,
             out double v)) return;
 
+    if (e.CellStyle is null) return;
+
     // Apply color based on grade thresholds
     e.CellStyle.ForeColor =
         v >= 5.0 ? C_Green :
@@ -956,4 +958,5 @@ static DataGridView MakeGrid()
     d.DefaultCellStyle.Padding                  = new Padding(10, 0, 10, 0);
 
     return d;
+}
 }

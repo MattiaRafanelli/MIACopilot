@@ -23,7 +23,7 @@ while (true)
     Session.Clear();
 
     // Show login dialog
-    using var login = new LoginForm(apprenticeService, trainerService);
+    using var login = new LoginForm(apprenticeService, trainerService, companyService);
 
     // If login dialog was closed or cancelled → exit application
     if (login.ShowDialog() != DialogResult.OK)
@@ -71,6 +71,21 @@ while (true)
                     )
                     : throw new InvalidOperationException(
                         $"Apprentice with ID {Session.UserId} was not found."
+                    ),
+
+            // Company admin → company-scoped portal
+            UserRole.CompanyAdmin =>
+                companyService.GetById(Session.CompanyId) is { } company
+                    ? new CompanyAdminPortal(
+                        company.Id,
+                        company.Name,
+                        apprenticeService,
+                        trainerService,
+                        companyService,
+                        gradeService
+                    )
+                    : throw new InvalidOperationException(
+                        $"Company with ID {Session.CompanyId} was not found."
                     ),
 
             // Fallback (should not normally occur)

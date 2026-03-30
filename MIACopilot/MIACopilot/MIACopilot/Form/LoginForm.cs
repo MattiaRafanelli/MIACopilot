@@ -12,6 +12,7 @@ public class LoginForm : Form
 {
     private readonly ApprenticeService        _apprenticeService;
     private readonly VocationalTrainerService _trainerService;
+    private readonly CompanyService           _companyService;
 
     private TextBox txtUsername = new();
     private TextBox txtPin      = new();
@@ -27,10 +28,11 @@ public class LoginForm : Form
     static readonly Color C_Error  = Color.FromArgb(239, 68, 68);
 
     // Injects required services and builds the UI.
-    public LoginForm(ApprenticeService apprenticeService, VocationalTrainerService trainerService)
+    public LoginForm(ApprenticeService apprenticeService, VocationalTrainerService trainerService, CompanyService companyService)
     {
         _apprenticeService = apprenticeService;
         _trainerService    = trainerService;
+        _companyService    = companyService;
         BuildUI();
     }
 
@@ -57,17 +59,17 @@ public class LoginForm : Form
             using var b2 = new SolidBrush(Color.FromArgb(15, 0, 180, 216));
             g.FillEllipse(b2, -70, 360, 220, 220);
 
-            // Logo text
+            // Logo text — title block moved up, MIA/Copilot gap closed
             using var f1 = new Font("Segoe UI", 34f, FontStyle.Bold);
-            g.DrawString("MIA", f1, Brushes.White, 44, 120);
+            g.DrawString("MIA", f1, Brushes.White, 44, 76);
             using var f2 = new Font("Segoe UI", 34f);
-            g.DrawString("Copilot", f2, new SolidBrush(C_Accent), 44, 200);
+            g.DrawString("Copilot", f2, new SolidBrush(C_Accent), 44, 118);
 
-            // Taglines
+            // Taglines — follow tightly below the title block
             using var f3 = new Font("Segoe UI", 9.5f);
             using var m  = new SolidBrush(Color.FromArgb(148, 163, 184));
-            g.DrawString("Apprentice Management System", f3, m, 44, 260);
-            g.DrawString("Track · Learn · Grow", f3, m, 44, 282);
+            g.DrawString("Apprentice Management System", f3, m, 44, 176);
+            g.DrawString("Track · Learn · Grow", f3, m, 44, 198);
 
             // Supported roles
             using var f4 = new Font("Segoe UI", 8.5f, FontStyle.Italic);
@@ -79,7 +81,7 @@ public class LoginForm : Form
         {
             Dock = DockStyle.Fill,
             BackColor = C_White,
-            Padding = new Padding(52, 54, 52, 36)
+            Padding = new Padding(52, 24, 52, 36)   // reduced top padding → "Welcome back" moves up
         };
 
         var lblTitle = new Label
@@ -135,13 +137,26 @@ public class LoginForm : Form
         btnLogin.FlatAppearance.BorderSize = 0;
         btnLogin.Click += OnLogin;
 
+        var lnkForgotPin = new LinkLabel
+        {
+            Text      = "Forgot PIN?",
+            Dock      = DockStyle.Top,
+            Height    = 22,
+            Font      = new Font("Segoe UI", 9f),
+            LinkColor = C_Accent,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        lnkForgotPin.LinkClicked += OnForgotPin;
+
         // Keyboard navigation
         txtUsername.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) txtPin.Focus(); };
         txtPin.KeyDown      += (_, e) => { if (e.KeyCode == Keys.Enter) OnLogin(null, EventArgs.Empty); };
 
         // Layout stack
         right.Controls.Add(btnLogin);
-        right.Controls.Add(Spacer(10));
+        right.Controls.Add(Spacer(6));
+        right.Controls.Add(lnkForgotPin);
+        right.Controls.Add(Spacer(4));
         right.Controls.Add(lblError);
         right.Controls.Add(Spacer(8));
         right.Controls.Add(txtPin);
@@ -233,9 +248,31 @@ public class LoginForm : Form
             return;
         }
 
+        // Company Admin login
+        var company = _companyService.GetAll()
+            .FirstOrDefault(c => c.AdminUsername.ToLower() == user && c.AdminPin == pin
+                              && !string.IsNullOrEmpty(c.AdminUsername));
+        if (company != null)
+        {
+            Session.Role      = UserRole.CompanyAdmin;
+            Session.UserId    = 0;
+            Session.CompanyId = company.Id;
+            Session.Username  = company.AdminUsername;
+            Session.FullName  = company.Name + " Admin";
+            DialogResult      = DialogResult.OK;
+            return;
+        }
+
         // Failure
         lblError.Text = "⚠  Invalid username or PIN. Please try again.";
         txtPin.Clear();
         txtPin.Focus();
+    }
+
+    void OnForgotPin(object? sender, LinkLabelLinkClickedEventArgs e)
+    {
+        lblError.Text = "";
+        using var form = new PinResetForm(_apprenticeService, _trainerService, _companyService);
+        form.ShowDialog(this);
     }
 }

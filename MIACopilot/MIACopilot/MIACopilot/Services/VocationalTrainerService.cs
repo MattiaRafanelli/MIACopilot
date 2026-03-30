@@ -64,6 +64,7 @@ public class VocationalTrainerService
         existing.Phone     = updated.Phone;
         existing.CompanyId = updated.CompanyId;
         existing.Username  = updated.Username;
+        existing.Pin       = updated.Pin;
 
         _dataService.SaveTrainers(_trainers);
         return true;

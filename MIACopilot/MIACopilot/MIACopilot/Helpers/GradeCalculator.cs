@@ -37,4 +37,3 @@ public static class GradeCalculator
     public static double RoundToHalf(double value)
         => Math.Round(value * 2, MidpointRounding.AwayFromZero) / 2.0;
 }
-``

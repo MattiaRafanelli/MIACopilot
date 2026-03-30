@@ -1,5 +1,6 @@
 using System.Text.Json;
 using MIACopilot.Models;
+using MIACopilot.Services;
 
 namespace MIACopilot.Services;
 
@@ -12,10 +13,11 @@ public class GradeService
     // Path to the grades JSON file
     private readonly string _file;
 
-    // JSON serialization options
+    // JSON serialization options (with tolerant DateTime converter)
     private readonly JsonSerializerOptions _options = new()
     {
-        WriteIndented = true
+        WriteIndented = true,
+        Converters    = { new RobustDateTimeConverter() }
     };
 
     // In-memory list of all grades

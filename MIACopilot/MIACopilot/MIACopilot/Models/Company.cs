@@ -24,6 +24,10 @@ public class Company
     // Industry or business sector
     public string Industry { get; set; } = string.Empty;
 
+    // Company Admin login credentials
+    public string AdminUsername { get; set; } = string.Empty;
+    public string AdminPin      { get; set; } = string.Empty;
+
     /// <summary>
     /// Returns a readable string representation of the company.
     /// Useful for debugging and logging.

@@ -1,7 +1,31 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using MIACopilot.Models;
 
 namespace MIACopilot.Services;
+
+/// <summary>
+/// Tolerant DateTime converter: strips any duplicate time-suffix before parsing.
+/// Handles malformed strings like "2024-08-01T00:00:00T00:00:00".
+/// </summary>
+internal sealed class RobustDateTimeConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var raw = reader.GetString() ?? "";
+        // Remove any second T…-suffix (e.g. "…T00:00:00T00:00:00" → "…T00:00:00")
+        var tIdx = raw.IndexOf('T');
+        if (tIdx >= 0)
+        {
+            var second = raw.IndexOf('T', tIdx + 1);
+            if (second >= 0) raw = raw[..second];
+        }
+        return DateTime.Parse(raw, System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        => writer.WriteStringValue(value.ToString("yyyy-MM-ddTHH:mm:ss"));
+}
 
 /// <summary>
 /// Handles loading and saving all application data to and from JSON files.
@@ -12,10 +36,11 @@ public class DataService
     // Base folder where all JSON data files are stored
     private readonly string _dataFolder = "data";
 
-    // JSON options (pretty-printed for readability)
+    // JSON options (pretty-printed, with a tolerant DateTime converter)
     private readonly JsonSerializerOptions _options = new()
     {
-        WriteIndented = true
+        WriteIndented = true,
+        Converters    = { new RobustDateTimeConverter() }
     };
 
     // File paths for each entity type
